@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#FF6B00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RAS Pre">
+<title>RAS Pre Quiz — प्रैक्टिस ऐप</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root{
+  --saffron:#FF6B00;--gold:#FFB300;--deep-navy:#0D1B3E;
+  --navy:#1a2a5e;--light-navy:#2a3f7e;--royal:#3355aa;
+  --green:#00C853;--red:#FF1744;--text:#1a0a3e;--muted:#5a5a7a;
+  --card:#fff;--shadow:0 6px 24px rgba(13,27,62,.15);--r:14px;--t:.22s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans Devanagari',sans-serif;background:linear-gradient(135deg,#0D1B3E,#1a2a5e 50%,#2a1060);min-height:100vh;color:var(--text)}
+
+/* ── HEADER ── */
+.hdr{background:linear-gradient(90deg,#0D1B3E,#1a2a5e);border-bottom:3px solid var(--saffron);position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.hdr-in{max-width:1200px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-ic{width:42px;height:42px;background:linear-gradient(135deg,var(--saffron),var(--gold));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.logo-tx .t1{color:#fff;font-size:1rem;font-weight:700;letter-spacing:.5px}
+.logo-tx .t2{color:var(--gold);font-size:.68rem;font-weight:500}
+.hstats{display:flex;gap:10px}
+.hbadge{background:rgba(255,107,0,.15);border:1px solid rgba(255,107,0,.3);border-radius:8px;padding:4px 10px;text-align:center}
+.hbadge span{display:block;color:#fff;font-size:.9rem;font-weight:700}
+.hbadge small{color:var(--gold);font-size:.68rem;font-weight:600}
+.menu-btn{display:none;background:transparent;border:none;color:#fff;font-size:1.5rem;cursor:pointer;padding:4px 8px}
+
+/* ── LAYOUT ── */
+.app{max-width:1200px;margin:0 auto;padding:14px 14px 90px}
+
+/* ── BOTTOM NAV (mobile) ── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:linear-gradient(180deg,#0D1B3E,#111d42);border-top:2px solid var(--saffron);padding:6px 0 env(safe-area-inset-bottom,6px)}
+.bnav-row{display:flex;justify-content:space-around;align-items:center}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;border:none;background:transparent;color:rgba(255,255,255,.55);font-family:inherit;font-size:.6rem;font-weight:600;cursor:pointer;transition:var(--t);min-width:0}
+.bnav-btn .bni{font-size:1.3rem;line-height:1}
+.bnav-btn.on{color:var(--saffron)}
+.bnav-btn.on .bni{filter:drop-shadow(0 0 4px rgba(255,107,0,.6))}
+.bnav-more{position:relative}
+
+/* ── MOBILE DRAWER (extra tabs) ── */
+.mdrawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400}
+.mdrawer-overlay.on{display:block}
+.mdrawer{position:fixed;right:0;top:0;bottom:0;width:78%;max-width:320px;background:linear-gradient(180deg,#0D1B3E,#151f4a);z-index:401;transform:translateX(100%);transition:transform .28s ease;padding:18px 14px;overflow-y:auto}
+.mdrawer.on{transform:translateX(0)}
+.mdrawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+.mdrawer-head strong{color:#fff;font-size:1rem}
+.mdrawer-close{background:transparent;border:none;color:#fff;font-size:1.4rem;cursor:pointer}
+.mdrawer-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:none;color:rgba(255,255,255,.8);font-family:inherit;font-size:.85rem;font-weight:600;padding:12px 10px;border-radius:10px;cursor:pointer;transition:var(--t)}
+.mdrawer-btn:active,.mdrawer-btn.on{background:rgba(255,107,0,.18);color:var(--gold)}
+.mdi{font-size:1.15rem;width:22px;text-align:center}
+
+/* ── BREADCRUMB ── */
+.bc{display:none;align-items:center;gap:8px;margin-bottom:12px;color:rgba(255,255,255,.7);font-size:.82rem}
+.bc.show{display:flex}
+.bck{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:5px 12px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit}
+.bc strong{color:var(--gold)}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tbtn{flex-shrink:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);font-family:inherit;font-size:.8rem;font-weight:600;padding:9px 16px;border-radius:22px;cursor:pointer;transition:var(--t);white-space:nowrap}
+.tbtn:hover{background:rgba(255,255,255,.14)}
+.tbtn.on{background:linear-gradient(135deg,var(--saffron),var(--gold));color:#1a0a00;border-color:transparent;box-shadow:0 3px 12px rgba(255,107,0,.4)}
+
+/* ── PANELS ── */
+.panel{display:none}
+.panel.on{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.notice{background:linear-gradient(135deg,rgba(255,179,0,.15),rgba(255,107,0,.1));border:1px solid rgba(255,179,0,.35);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;color:#fff;font-size:.85rem;line-height:1.5}
+.notice b{color:var(--gold)}
+
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.ctitle{font-size:.95rem;font-weight:700;color:var(--deep-navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* ── HOME DASHBOARD ── */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:linear-gradient(135deg,var(--navy),var(--light-navy));border-radius:12px;padding:14px 10px;text-align:center}
+.stat-card .sv{color:#fff;font-size:1.35rem;font-weight:800}
+.stat-card .sl{color:rgba(255,255,255,.6);font-size:.68rem;font-weight:600;margin-top:2px}
+
+.subj-sec{margin-bottom:18px}
+.subj-sec-title{color:#fff;font-size:.9rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.subj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.subj-card{background:var(--card);border-radius:12px;padding:14px 12px;cursor:pointer;transition:var(--t);box-shadow:0 3px 10px rgba(0,0,0,.15);position:relative;overflow:hidden}
+.subj-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.22)}
+.subj-card .sic{font-size:1.6rem;margin-bottom:6px}
+.subj-card .snm{font-size:.78rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:6px;min-height:2.2em}
+.subj-card .sct{font-size:.66rem;color:var(--muted);font-weight:600}
+.subj-card .sbar{height:4px;background:rgba(0,0,0,.08);border-radius:2px;margin-top:8px;overflow:hidden}
+.subj-card .sbar i{display:block;height:100%;background:linear-gradient(90deg,var(--saffron),var(--gold));border-radius:2px}
+.empty-state{text-align:center;padding:30px 16px;color:rgba(255,255,255,.55)}
+.empty-state .eic{font-size:2.4rem;margin-bottom:8px}
+.empty-state p{font-size:.82rem;line-height:1.6}
+.empty-state button{margin-top:12px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,var(--saffron),var(--gold));color:#1a0a00;border:none;font-family:inherit;font-size:.82rem;font-weight:700;padding:10px 18px;border-radius:10px;cursor:pointer;transition:var(--t)}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:scale(.97)}
+.btn.sec{background:rgba(0,0,0,.06);color:var(--text)}
+.btn.ghost{background:transparent;border:1px solid rgba(0,0,0,.15);color:var(--text)}
+.btn.danger{background:linear-gradient(135deg,#FF1744,#D50000);color:#fff}
+.btn.block{width:100%}
+.btn.sm{padding:6px 12px;font-size:.72rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── TOPIC LIST (inside a subject) ── */
+.topic-row{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:12px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:var(--t);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.topic-row:hover{box-shadow:0 4px 14px rgba(0,0,0,.16)}
+.topic-row .tinfo{flex:1;min-width:0}
+.topic-row .tnm{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.topic-row .tm{font-size:.68rem;color:var(--muted)}
+.topic-row .badge{font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.badge.bh{background:rgba(255,23,68,.12);color:#c4001d}
+.badge.bm{background:rgba(255,179,0,.15);color:#b37800}
+.badge.bl{background:rgba(0,200,83,.13);color:#00873c}
+.topic-row .tarrow{color:var(--muted);font-size:1.1rem;flex-shrink:0}
+
+/* ── SYLLABUS MANAGEMENT (new) ── */
+.syl-subj-block{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.syl-subj-head{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;background:linear-gradient(135deg,rgba(255,107,0,.06),rgba(255,179,0,.04))}
+.syl-subj-head .sic{font-size:1.4rem}
+.syl-subj-head .snm{flex:1;font-size:.88rem;font-weight:700;color:var(--text)}
+.syl-subj-head .scount{font-size:.68rem;color:var(--muted);font-weight:600;background:rgba(0,0,0,.05);padding:3px 9px;border-radius:20px}
+.syl-subj-head .schev{color:var(--muted);transition:var(--t)}
+.syl-subj-head.open .schev{transform:rotate(90deg)}
+.syl-subj-body{display:none;padding:0 14px 14px}
+.syl-subj-body.open{display:block}
+.syl-topic-row{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;margin-bottom:6px;background:rgba(0,0,0,.025)}
+.syl-topic-row .ttxt{flex:1;font-size:.78rem;color:var(--text);font-weight:600}
+.syl-topic-row .twt{font-size:.72rem;font-weight:700;color:var(--saffron);background:rgba(255,107,0,.1);padding:2px 8px;border-radius:12px;white-space:nowrap}
+.syl-topic-row .ticon{background:transparent;border:none;cursor:pointer;font-size:.9rem;color:var(--muted);padding:4px;flex-shrink:0}
+.syl-topic-row .ticon:hover{color:var(--red)}
+.syl-add-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.syl-add-row input{flex:1;min-width:120px;padding:8px 10px;border:1px solid rgba(0,0,0,.15);border-radius:8px;font-family:inherit;font-size:.78rem}
+.syl-add-row input.wt-input{flex:0 0 78px;min-width:78px}
+.syl-empty-topics{text-align:center;padding:14px;color:var(--muted);font-size:.74rem}
+
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:9px 11px;border:1px solid rgba(0,0,0,.15);border-radius:8px;font-family:inherit;font-size:.83rem}
+.form-row textarea{resize:vertical;min-height:70px}
+.icon-picker{display:flex;flex-wrap:wrap;gap:6px}
+.icon-opt{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;border:1.5px solid rgba(0,0,0,.12);border-radius:9px;cursor:pointer;background:#fff}
+.icon-opt.sel{border-color:var(--saffron);background:rgba(255,107,0,.1)}
+
+/* ── QUIZ SCREEN ── */
+.quiz-hd{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.quiz-hd .qh-l{font-size:.78rem;color:var(--muted);font-weight:600}
+.quiz-hd .qh-timer{font-size:.9rem;font-weight:800;color:var(--saffron)}
+.qprog-bar{height:6px;background:rgba(0,0,0,.08);border-radius:3px;overflow:hidden;margin-bottom:16px}
+.qprog-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--saffron),var(--gold));border-radius:3px;transition:width .3s}
+.q-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:20px 18px;margin-bottom:16px}
+.q-text{font-size:.95rem;font-weight:700;color:var(--text);line-height:1.55;margin-bottom:16px}
+.q-opt{display:flex;align-items:flex-start;gap:10px;background:rgba(0,0,0,.03);border:1.5px solid transparent;border-radius:11px;padding:12px 14px;margin-bottom:9px;cursor:pointer;transition:var(--t);font-size:.85rem;line-height:1.4}
+.q-opt:hover{background:rgba(255,107,0,.06)}
+.q-opt .olabel{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem}
+.q-opt.sel{border-color:var(--saffron);background:rgba(255,107,0,.08)}
+.q-opt.correct{border-color:var(--green);background:rgba(0,200,83,.1)}
+.q-opt.correct .olabel{background:var(--green);color:#fff}
+.q-opt.wrong{border-color:var(--red);background:rgba(255,23,68,.08)}
+.q-opt.wrong .olabel{background:var(--red);color:#fff}
+.q-exp{background:rgba(51,85,170,.07);border-left:3px solid var(--royal);border-radius:8px;padding:11px 13px;margin-top:12px;font-size:.78rem;line-height:1.5;color:var(--text)}
+.q-exp b{color:var(--royal)}
+.q-src{font-size:.68rem;color:var(--muted);margin-top:6px;font-style:italic}
+.qnav{display:flex;gap:8px;justify-content:space-between;align-items:center}
+.qnav .mid{display:flex;gap:8px}
+
+.result-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:24px 18px;text-align:center;margin-bottom:16px}
+.result-ring{width:120px;height:120px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;position:relative}
+.result-ring .rin{width:96px;height:96px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.result-ring .rpct{font-size:1.5rem;font-weight:800;color:var(--deep-navy)}
+.result-ring .rlbl{font-size:.62rem;color:var(--muted);font-weight:600}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.result-stats .rs{background:rgba(0,0,0,.03);border-radius:10px;padding:10px}
+.result-stats .rv{font-size:1.1rem;font-weight:800}
+.result-stats .rl{font-size:.64rem;color:var(--muted);font-weight:600}
+
+/* ── STATUS MSG ── */
+.status-msg{border-radius:10px;padding:10px 14px;font-size:.78rem;font-weight:600;margin-top:10px;display:none}
+.status-msg.show{display:block}
+.status-msg.ok{background:rgba(0,200,83,.12);color:#00873c;border:1px solid rgba(0,200,83,.3)}
+.status-msg.err{background:rgba(255,23,68,.1);color:#c4001d;border:1px solid rgba(255,23,68,.3)}
+
+.json-area{width:100%;min-height:140px;padding:12px;border:1.5px solid rgba(0,0,0,.15);border-radius:10px;font-family:'Courier New',monospace;font-size:.75rem;resize:vertical}
+.drop-zone{border:2px dashed rgba(0,0,0,.2);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:var(--t);color:var(--muted);font-size:.8rem}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--saffron);background:rgba(255,107,0,.05)}
+
+.qm-topic-item{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:11px 14px;margin-bottom:7px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.qm-topic-item .qmi{flex:1;font-size:.8rem;font-weight:600}
+.qm-topic-item .qmc{font-size:.7rem;color:var(--muted);background:rgba(0,0,0,.05);padding:3px 9px;border-radius:20px}
+
+.bm-item{background:var(--card);border-radius:12px;padding:14px 16px;margin-bottom:9px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.bm-q{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.4}
+.bm-a{font-size:.76rem;color:var(--green);font-weight:600;margin-bottom:8px}
+
+.weak-item{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:12px;padding:13px 15px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.weak-item .wrank{width:28px;height:28px;border-radius:50%;background:rgba(255,23,68,.1);color:var(--red);font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.weak-item .winfo{flex:1}
+.weak-item .wnm{font-size:.82rem;font-weight:700;color:var(--text)}
+.weak-item .wm{font-size:.68rem;color:var(--muted);margin-top:2px}
+.weak-item .wacc{font-size:.9rem;font-weight:800;color:var(--red)}
+
+.sb-input{width:100%;padding:10px 12px;border:1px solid rgba(0,0,0,.15);border-radius:8px;font-family:inherit;font-size:.82rem;margin-bottom:9px}
+.sb-status{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;padding:9px 12px;border-radius:9px;background:rgba(0,0,0,.04);margin-bottom:12px}
+.sb-status.ok{background:rgba(0,200,83,.1);color:#00873c}
+
+/* ── RESPONSIVE ── */
+@media (max-width:760px){
+  .menu-btn{display:block}
+  .tabs{display:none}
+  .bottom-nav{display:block}
+  .app{padding-bottom:78px}
+  .hbadge{display:none}
+  .hbadge:first-child{display:block}
+}
+@media (min-width:761px){
+  .mdrawer-overlay,.mdrawer{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-in">
+    <div class="logo">
+      <div class="logo-ic">🎯</div>
+      <div class="logo-tx">
+        <div class="t1">RAS Pre Quiz</div>
+        <div class="t2">Rajasthan Administrative Service</div>
+      </div>
+    </div>
+    <div class="hstats">
+      <div class="hbadge"><span id="hQ">0</span><small>प्रश्न</small></div>
+      <div class="hbadge"><span id="hA">0</span><small>हल किए</small></div>
+      <div class="hbadge"><span id="hS">—</span><small>सटीकता</small></div>
+    </div>
+    <button class="menu-btn" onclick="toggleDrawer(true)">☰</button>
+  </div>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mdrawer-overlay" id="mdrawerOv" onclick="toggleDrawer(false)"></div>
+<div class="mdrawer" id="mdrawer">
+  <div class="mdrawer-head">
+    <strong>मेनू</strong>
+    <button class="mdrawer-close" onclick="toggleDrawer(false)">✕</button>
+  </div>
+  <button class="mdrawer-btn" onclick="goTabDrawer('home')" data-dtab="home"><span class="mdi">🏠</span>होम</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('mock')" data-dtab="mock"><span class="mdi">📝</span>Mock Test</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('prog')" data-dtab="prog"><span class="mdi">📈</span>प्रगति</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('bookmarks')" data-dtab="bookmarks"><span class="mdi">📌</span>Bookmarks</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('daily')" data-dtab="daily"><span class="mdi">🎯</span>Daily Target</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('revision')" data-dtab="revision"><span class="mdi">📕</span>Revision Bank</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('weak')" data-dtab="weak"><span class="mdi">📊</span>कमज़ोर टॉपिक्स</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('syllabus')" data-dtab="syllabus"><span class="mdi">📚</span>सिलेबस प्रबंधन</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('manage')" data-dtab="manage"><span class="mdi">⚙️</span>प्रश्न प्रबंधन</button>
+  <button class="mdrawer-btn" onclick="goTabDrawer('supabase')" data-dtab="supabase"><span class="mdi">☁️</span>Cloud Sync</button>
+</div>
+
+<div class="app">
+  <!-- BREADCRUMB -->
+  <div class="bc" id="bc">
+    <button class="bck" onclick="goBack()">← वापस</button>
+    <span>▶</span>
+    <strong id="bcText"></strong>
+  </div>
+
+  <!-- TABS (desktop) -->
+  <div class="tabs" id="mainTabs">
+    <button class="tbtn on" onclick="goTab('home')">🏠 होम</button>
+    <button class="tbtn" onclick="goTab('mock')">📝 Mock Test</button>
+    <button class="tbtn" onclick="goTab('prog')">📈 प्रगति</button>
+    <button class="tbtn" onclick="goTab('bookmarks')">📌 Bookmarks</button>
+    <button class="tbtn" onclick="goTab('daily')">🎯 Daily Target</button>
+    <button class="tbtn" onclick="goTab('revision')">📕 Revision Bank</button>
+    <button class="tbtn" onclick="goTab('weak')">📊 कमज़ोर टॉपिक्स</button>
+    <button class="tbtn" onclick="goTab('syllabus')">📚 सिलेबस प्रबंधन</button>
+    <button class="tbtn" onclick="goTab('manage')">⚙️ प्रश्न प्रबंधन</button>
+    <button class="tbtn" onclick="goTab('supabase')">☁️ Cloud Sync</button>
+  </div>
+
+  <!-- HOME -->
+  <div class="panel on" id="panel-home">
+    <div class="notice" id="welcomeNotice">
+      <b>👋 स्वागत है!</b> यह ऐप बिल्कुल खाली सिलेबस के साथ शुरू होता है — कुछ Subject नाम पहले से जोड़ दिए हैं (RAS Pre pattern के अनुसार), लेकिन Micro-topics और उनका वेटेज आप <b>"📚 सिलेबस प्रबंधन"</b> टैब से खुद जोड़ेंगे। उसके बाद <b>"⚙️ प्रश्न प्रबंधन"</b> से हर टॉपिक में JSON प्रश्न अपलोड करें।
+    </div>
+    <div id="homeDailyWidget"></div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="sv" id="hcSubj">0</div><div class="sl">SUBJECTS</div></div>
+      <div class="stat-card"><div class="sv" id="hcTopic">0</div><div class="sl">MICRO-TOPICS</div></div>
+      <div class="stat-card"><div class="sv" id="hcQ">0</div><div class="sl">कुल प्रश्न</div></div>
+    </div>
+    <div class="subj-sec">
+      <div class="subj-sec-title">📚 RAS Pre सिलेबस</div>
+      <div class="subj-grid" id="homeSubjGrid"></div>
+    </div>
+  </div>
+
+  <!-- SUBJECT TOPIC LIST (drill-down) -->
+  <div class="panel" id="panel-subjectView">
+    <div class="card">
+      <div class="ctitle" id="svTitle"></div>
+      <div id="svTopicList"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="panel" id="panel-quizSetup">
+    <div class="card">
+      <div class="ctitle" id="qsTitle">🎮 Quiz सेटअप</div>
+      <div class="form-row">
+        <label>प्रश्नों की संख्या</label>
+        <select id="qsCount">
+          <option value="10">10 प्रश्न</option>
+          <option value="20" selected>20 प्रश्न</option>
+          <option value="30">30 प्रश्न</option>
+          <option value="all">सभी उपलब्ध प्रश्न</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>मोड</label>
+        <select id="qsMode">
+          <option value="practice">Practice (तुरंत उत्तर दिखेगा)</option>
+          <option value="test">Test (अंत में उत्तर दिखेगा)</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="btn block" onclick="startTopicQuiz()">▶️ Quiz शुरू करें</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-quiz">
+    <div class="quiz-hd">
+      <div class="qh-l" id="quizProgTxt">प्रश्न 1/10</div>
+      <div class="qh-timer" id="quizTimer">00:00</div>
+    </div>
+    <div class="qprog-bar"><i id="quizProgBar" style="width:0%"></i></div>
+    <div class="q-card" id="quizQCard"></div>
+    <div class="qnav">
+      <button class="btn ghost" onclick="quizExit()">✕ बाहर निकलें</button>
+      <div class="mid">
+        <button class="btn sec" id="quizSkipBtn" onclick="quizSkip()">Skip</button>
+        <button class="btn" id="quizNextBtn" onclick="quizNext()" disabled>अगला →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-quizResult">
+    <div class="result-card">
+      <div class="result-ring" id="resultRing"><div class="rin"><div class="rpct" id="resPct">0%</div><div class="rlbl">सटीकता</div></div></div>
+      <div style="font-size:1rem;font-weight:700;color:var(--deep-navy)" id="resTitle"></div>
+      <div class="result-stats">
+        <div class="rs"><div class="rv" style="color:var(--green)" id="resCorrect">0</div><div class="rl">सही</div></div>
+        <div class="rs"><div class="rv" style="color:var(--red)" id="resWrong">0</div><div class="rl">गलत</div></div>
+        <div class="rs"><div class="rv" style="color:var(--muted)" id="resSkip">0</div><div class="rl">Skip</div></div>
+      </div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn sec" onclick="reviewQuiz()">📋 समीक्षा करें</button>
+        <button class="btn" onclick="goTab('home')">🏠 होम पर जाएं</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOCK TEST -->
+  <div class="panel" id="panel-mock">
+    <div class="card">
+      <div class="ctitle">🏆 Mock Test सेटअप</div>
+      <div class="form-row">
+        <label>प्रश्नों की संख्या</label>
+        <select id="mockCount">
+          <option value="50">50 प्रश्न</option>
+          <option value="100" selected>100 प्रश्न</option>
+          <option value="150">150 प्रश्न</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>समय सीमा (मिनट)</label>
+        <select id="mockTime">
+          <option value="60">60 मिनट</option>
+          <option value="120" selected>120 मिनट</option>
+          <option value="180">180 मिनट</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>वेटेज के अनुसार प्रश्न चुनें?</label>
+        <select id="mockWeighted">
+          <option value="yes" selected>हाँ — ज़्यादा वेटेज वाले टॉपिक से ज़्यादा प्रश्न</option>
+          <option value="no">नहीं — सभी टॉपिक से समान रूप से</option>
+        </select>
+      </div>
+      <button class="btn block" onclick="startMock()">🏁 Mock Test शुरू करें</button>
+      <div class="status-msg" id="mockStatus"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle" style="cursor:pointer" onclick="toggleMockHist()">📋 पिछले Mock Test परिणाम <span id="mhChev" style="margin-left:auto">▾</span></div>
+      <div id="mockHistList" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="panel" id="panel-prog">
+    <div class="card">
+      <div class="ctitle">📈 समग्र प्रगति</div>
+      <div class="result-stats">
+        <div class="rs"><div class="rv" style="color:var(--green)" id="pgC">0</div><div class="rl">सही उत्तर</div></div>
+        <div class="rs"><div class="rv" style="color:var(--red)" id="pgW">0</div><div class="rl">गलत उत्तर</div></div>
+        <div class="rs"><div class="rv" style="color:var(--muted)" id="pgS">0</div><div class="rl">Skip किए</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">📚 विषयवार प्रगति</div>
+      <div id="progSubjList"></div>
+    </div>
+  </div>
+
+  <!-- BOOKMARKS -->
+  <div class="panel" id="panel-bookmarks">
+    <div class="card">
+      <div class="ctitle">📌 Bookmarked प्रश्न (<span id="bmCount">0</span>)</div>
+      <div id="bmList"></div>
+    </div>
+  </div>
+
+  <!-- DAILY TARGET -->
+  <div class="panel" id="panel-daily">
+    <div class="card">
+      <div class="ctitle">🎯 दैनिक लक्ष्य</div>
+      <div class="form-row">
+        <label>रोज़ाना कितने प्रश्न हल करना चाहते हैं?</label>
+        <input type="number" id="dailyGoalInput" min="5" max="200" value="20">
+      </div>
+      <button class="btn" onclick="saveDailyGoal()">लक्ष्य सेव करें</button>
+      <div id="dailyBigWidget" style="margin-top:16px"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">📅 पिछले 14 दिन</div>
+      <div id="dailyHistory"></div>
+    </div>
+  </div>
+
+  <!-- REVISION BANK -->
+  <div class="panel" id="panel-revision">
+    <div class="notice"><b>📕 Revision Bank</b> — जिन प्रश्नों में आपने गलती की, वे यहाँ अपने आप जुड़ जाते हैं ताकि आप बार-बार दोहरा सकें।</div>
+    <div class="card">
+      <div class="ctitle">गलत किए गए प्रश्न (<span id="revCount">0</span>)</div>
+      <div class="btn-row" style="margin-bottom:12px">
+        <button class="btn sm" onclick="startRevisionQuiz()">▶️ इन सभी का Quiz बनाएं</button>
+        <button class="btn sm sec" onclick="clearMasteredRevision()">✅ Mastered हटाएं</button>
+      </div>
+      <div id="revList"></div>
+    </div>
+  </div>
+
+  <!-- WEAK TOPICS -->
+  <div class="panel" id="panel-weak">
+    <div class="notice"><b>📊 कमज़ोर टॉपिक्स</b> — सबसे कम सटीकता वाले टॉपिक ऊपर दिखेंगे, ताकि आप वहाँ ज़्यादा ध्यान दे सकें। (कम से कम 3 प्रश्न हल किए हुए टॉपिक ही दिखेंगे)</div>
+    <div class="card">
+      <div id="weakList"></div>
+    </div>
+  </div>
+
+  <!-- ═══════ SYLLABUS MANAGEMENT (NEW) ═══════ -->
+  <div class="panel" id="panel-syllabus">
+    <div class="notice">
+      <b>📚 सिलेबस प्रबंधन</b> — यहाँ आप अपना पूरा RAS Pre सिलेबस खुद बनाते हैं: पहले <b>Subject</b> जोड़ें (जैसे "राजस्थान इतिहास"), फिर उसमें <b>Micro-topic</b> जोड़ें (जैसे "1857 की क्रांति") और उसका <b>वेटेज</b> डालें — यानी RAS Pre में उस टॉपिक से औसतन कितने प्रश्न आते हैं (जैसे 1.5)। यह वेटेज बाद में Mock Test में और 🔥 उच्च/⚡ मध्यम/💡 कम बैज दिखाने में काम आएगा।
+    </div>
+
+    <div class="card">
+      <div class="ctitle">➕ नया Subject जोड़ें</div>
+      <div class="form-row">
+        <label>Subject का नाम (हिन्दी में)</label>
+        <input type="text" id="newSubjName" placeholder="जैसे: राजस्थान की भूगोल">
+      </div>
+      <div class="form-row">
+        <label>Icon चुनें</label>
+        <div class="icon-picker" id="iconPicker"></div>
+      </div>
+      <button class="btn" onclick="addSubject()">Subject जोड़ें</button>
+      <div class="status-msg" id="subjStatus"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">📥 सिलेबस Import / Export (Backup)</div>
+      <div style="font-size:.76rem;color:var(--muted);margin-bottom:10px;line-height:1.5">पूरे सिलेबस (Subjects + Topics + Weightage) को एक JSON फाइल में Export करें — ताकि आप उसे बैकअप रख सकें, दूसरे device पर Import कर सकें, या मुझसे (Claude) आगे किसी नए topic का सुझाव माँगते समय शेयर कर सकें।</div>
+      <div class="btn-row">
+        <button class="btn sm sec" onclick="exportSyllabus()">⬇️ सिलेबस Export करें</button>
+        <button class="btn sm sec" onclick="document.getElementById('syllabusImportFile').click()">⬆️ सिलेबस Import करें</button>
+        <input type="file" id="syllabusImportFile" accept=".json" style="display:none" onchange="importSyllabusFile(event)">
+      </div>
+      <div class="status-msg" id="syllabusIOStatus"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle">📋 आपका सिलेबस</div>
+      <div id="syllabusList"></div>
+    </div>
+  </div>
+
+  <!-- QUESTION MANAGEMENT -->
+  <div class="panel" id="panel-manage">
+    <div class="notice"><b>⚙️ प्रश्न प्रबंधन</b> — पहले "📚 सिलेबस प्रबंधन" में Subject और Micro-topic बना लें, फिर यहाँ से उस टॉपिक में JSON प्रश्न जोड़ें।</div>
+    <div class="card">
+      <div class="ctitle">कौनसे टॉपिक में प्रश्न जोड़ने हैं?</div>
+      <div class="form-row">
+        <select id="manageTopicSelect" onchange="onManageTopicChange()"></select>
+      </div>
+      <div id="manageUploadArea" style="display:none">
+        <div class="drop-zone" id="jsonDropZone" onclick="document.getElementById('jsonFileInput').click()">
+          📁 यहाँ क्लिक करें या JSON फाइल drag करें
+          <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="handleJsonFile(event)">
+        </div>
+        <div style="text-align:center;margin:10px 0;color:var(--muted);font-size:.72rem">— या —</div>
+        <textarea class="json-area" id="jsonPasteArea" placeholder='[{"q":"प्रश्न यहाँ लिखें","o":["विकल्प A","विकल्प B","विकल्प C","विकल्प D"],"a":1,"exp":"व्याख्या (वैकल्पिक)","src":"स्रोत (वैकल्पिक)","diff":"medium"}]'></textarea>
+        <button class="btn block" style="margin-top:10px" onclick="pasteJsonSubmit()">प्रश्न सेव करें</button>
+        <div class="status-msg" id="manageStatus"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">📊 सभी टॉपिक — प्रश्न संख्या</div>
+      <div id="manageTopicOverview"></div>
+    </div>
+  </div>
+
+  <!-- SUPABASE CLOUD SYNC -->
+  <div class="panel" id="panel-supabase">
+    <div class="notice"><b>☁️ Cloud Sync</b> — Supabase (मुफ़्त) से जोड़कर आप अपने सारे प्रश्न व सिलेबस किसी भी device से access कर सकते हैं। यह बिल्कुल वैकल्पिक है — बिना इसके भी ऐप Local Storage में पूरी तरह काम करती है।</div>
+    <div class="card">
+      <div class="ctitle">🔌 Supabase कनेक्ट करें</div>
+      <div id="sbStatusBox" class="sb-status">⚪ अभी कनेक्ट नहीं है</div>
+      <input class="sb-input" id="sbUrl" placeholder="Supabase Project URL (https://xxxx.supabase.co)" type="url">
+      <input class="sb-input" id="sbKey" placeholder="Supabase anon public API Key" type="text">
+      <div class="btn-row">
+        <button class="btn sm" onclick="connectSupabase()">कनेक्ट करें</button>
+        <button class="btn sm sec" onclick="syncToCloud()">☁️→ सब कुछ Upload करें</button>
+        <button class="btn sm sec" onclick="syncFromCloud()">☁️← सब कुछ Download करें</button>
+      </div>
+      <div class="status-msg" id="sbActionStatus"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">📖 Setup Guide</div>
+      <div style="font-size:.78rem;line-height:2;color:var(--text)">
+        <strong>Step 1</strong> — <a href="https://supabase.com" target="_blank">supabase.com</a> पर जाएं → Free account बनाएं<br>
+        <strong>Step 2</strong> — New Project बनाएं (कोई भी नाम, Password याद रखें)<br>
+        <strong>Step 3</strong> — बाईं तरफ <b>SQL Editor</b> → New Query → नीचे दिया गया SQL पेस्ट करके Run करें:
+        <pre style="background:#0D1B3E;color:#9fe;padding:10px;border-radius:8px;font-size:.68rem;overflow-x:auto;white-space:pre-wrap;margin:8px 0">create table rpsc_questions (id text primary key, questions jsonb, updated_at timestamptz);
+create table rpsc_syllabus (id text primary key, data jsonb, updated_at timestamptz);
+create table rpsc_progress (id text primary key, data jsonb, updated_at timestamptz);
+alter table rpsc_questions enable row level security;
+alter table rpsc_syllabus enable row level security;
+alter table rpsc_progress enable row level security;
+create policy "public access" on rpsc_questions for all using (true) with check (true);
+create policy "public access" on rpsc_syllabus for all using (true) with check (true);
+create policy "public access" on rpsc_progress for all using (true) with check (true);</pre>
+        <strong>Step 4</strong> — बाईं तरफ <b>Project Settings → API</b> जाएं → <b>Project URL</b> और <b>anon public key</b> कॉपी करें<br>
+        <strong>Step 5</strong> — ऊपर दोनों बॉक्स में पेस्ट करके "कनेक्ट करें" दबाएं
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav">
+  <div class="bnav-row">
+    <button class="bnav-btn on" data-btab="home" onclick="goTab('home')"><span class="bni">🏠</span>होम</button>
+    <button class="bnav-btn" data-btab="mock" onclick="goTab('mock')"><span class="bni">📝</span>Mock</button>
+    <button class="bnav-btn" data-btab="syllabus" onclick="goTab('syllabus')"><span class="bni">📚</span>सिलेबस</button>
+    <button class="bnav-btn" data-btab="weak" onclick="goTab('weak')"><span class="bni">📊</span>कमज़ोर</button>
+    <button class="bnav-btn bnav-more" onclick="toggleDrawer(true)"><span class="bni">☰</span>और</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let SYLLABUS = []; // [{id,name,icon,topics:[{id,name,avg}]}]
+const QDB = {}; // { topicId: [...questions] }
+let progress = {}; // { topicId: {attempted,correct,skipped} }
+let bookmarks = []; // [{topicId, qIndex, q, o, a, exp, src}]
+let revisionBank = []; // [{topicId, q, o, a, exp, src, mastered}]
+let dailyData = {}; // { 'YYYY-MM-DD': count }
+let dailyGoal = 20;
+let mockHistory = [];
+let currentTab = 'home';
+let tabHistory = [];
+let activeSubjectId = null;
+
+// quiz runtime
+let quizQueue = [];
+let quizIdx = 0;
+let quizResults = [];
+let quizMode = 'practice';
+let quizContext = ''; // label for title
+let quizTimerInterval = null;
+let quizSeconds = 0;
+let quizAnswered = false;
+let quizSourceTopicId = null;
+let quizIsRevision = false;
+
+const ICONS = ['📚','🏛️','🗺️','⚖️','💰','📰','🧮','🌾','🏔️','🎭','🏺','✊','👑','🕌','🌉','🔬','🌱','🖋️','⛰️','🏞️'];
+
+// ══════════════════════════════════════════════
+// DEFAULT SYLLABUS SKELETON (names only — user adds topics)
+// ══════════════════════════════════════════════
+function defaultSyllabus() {
+  return [
+    { id:'raj_hist', name:'राजस्थान का इतिहास एवं संस्कृति', icon:'🏰', topics:[] },
+    { id:'raj_geo', name:'राजस्थान का भूगोल', icon:'🗺️', topics:[] },
+    { id:'ind_geo', name:'भारत एवं विश्व का भूगोल', icon:'🌍', topics:[] },
+    { id:'ind_hist', name:'भारत का इतिहास', icon:'🏛️', topics:[] },
+    { id:'polity', name:'भारतीय राजव्यवस्था एवं शासन', icon:'⚖️', topics:[] },
+    { id:'economy', name:'भारतीय एवं राजस्थान अर्थव्यवस्था', icon:'💰', topics:[] },
+    { id:'science', name:'सामान्य विज्ञान एवं तकनीकी', icon:'🔬', topics:[] },
+    { id:'current', name:'समसामयिक घटनाएँ', icon:'📰', topics:[] },
+    { id:'reasoning', name:'रीजनिंग एवं मानसिक क्षमता', icon:'🧮', topics:[] },
+  ];
+}
+
+// ══════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════
+function loadAll() {
+  try {
+    const sy = localStorage.getItem('ras_syllabus');
+    SYLLABUS = sy ? JSON.parse(sy) : defaultSyllabus();
+  } catch(e) { SYLLABUS = defaultSyllabus(); }
+
+  try {
+    const qd = localStorage.getItem('ras_qdb');
+    if(qd) Object.assign(QDB, JSON.parse(qd));
+  } catch(e) {}
+
+  try {
+    const pg = localStorage.getItem('ras_progress');
+    if(pg) progress = JSON.parse(pg);
+  } catch(e) {}
+
+  try {
+    const bm = localStorage.getItem('ras_bookmarks');
+    if(bm) bookmarks = JSON.parse(bm);
+  } catch(e) {}
+
+  try {
+    const rv = localStorage.getItem('ras_revision');
+    if(rv) revisionBank = JSON.parse(rv);
+  } catch(e) {}
+
+  try {
+    const dd = localStorage.getItem('ras_daily');
+    if(dd) { const d=JSON.parse(dd); dailyData=d.data||{}; dailyGoal=d.goal||20; }
+  } catch(e) {}
+
+  try {
+    const mh = localStorage.getItem('ras_mocks');
+    if(mh) mockHistory = JSON.parse(mh);
+  } catch(e) {}
+
+  try {
+    SB_URL = localStorage.getItem('ras_sb_url') || '';
+    SB_KEY = localStorage.getItem('ras_sb_key') || '';
+  } catch(e) {}
+}
+
+function saveSyllabus() { localStorage.setItem('ras_syllabus', JSON.stringify(SYLLABUS)); }
+function saveQDB() { localStorage.setItem('ras_qdb', JSON.stringify(QDB)); }
+function saveProgress() { localStorage.setItem('ras_progress', JSON.stringify(progress)); }
+function saveBookmarks() { localStorage.setItem('ras_bookmarks', JSON.stringify(bookmarks)); }
+function saveRevision() { localStorage.setItem('ras_revision', JSON.stringify(revisionBank)); }
+function saveDaily() { localStorage.setItem('ras_daily', JSON.stringify({data:dailyData, goal:dailyGoal})); }
+function saveMocks() { localStorage.setItem('ras_mocks', JSON.stringify(mockHistory)); }
+
+// ══════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════
+function goTab(tab, push=true) {
+  if(push && currentTab !== tab) tabHistory.push(currentTab);
+  currentTab = tab;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  const panelMap = {home:'panel-home', mock:'panel-mock', prog:'panel-prog', bookmarks:'panel-bookmarks',
+    daily:'panel-daily', revision:'panel-revision', weak:'panel-weak', syllabus:'panel-syllabus',
+    manage:'panel-manage', supabase:'panel-supabase', subjectView:'panel-subjectView',
+    quizSetup:'panel-quizSetup', quiz:'panel-quiz', quizResult:'panel-quizResult'};
+  const el = document.getElementById(panelMap[tab]);
+  if(el) el.classList.add('on');
+
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.mdrawer-btn').forEach(b=>b.classList.remove('on'));
+  const tIdx = {home:0,mock:1,prog:2,bookmarks:3,daily:4,revision:5,weak:6,syllabus:7,manage:8,supabase:9};
+  if(tIdx[tab]!==undefined && document.querySelectorAll('.tbtn')[tIdx[tab]]) document.querySelectorAll('.tbtn')[tIdx[tab]].classList.add('on');
+  document.querySelectorAll(`[data-btab="${tab}"]`).forEach(b=>b.classList.add('on'));
+  document.querySelectorAll(`[data-dtab="${tab}"]`).forEach(b=>b.classList.add('on'));
+
+  const bc = document.getElementById('bc');
+  const showBc = ['subjectView','quizSetup','quiz','quizResult'].includes(tab);
+  bc.classList.toggle('show', showBc);
+
+  window.scrollTo(0,0);
+  runTabInit(tab);
+}
+function goTabDrawer(tab) { toggleDrawer(false); goTab(tab); }
+function goBack() {
+  const prev = tabHistory.pop() || 'home';
+  goTab(prev, false);
+}
+function toggleDrawer(open) {
+  document.getElementById('mdrawer').classList.toggle('on', open);
+  document.getElementById('mdrawerOv').classList.toggle('on', open);
+}
+function runTabInit(tab) {
+  if(tab==='home') renderHome();
+  else if(tab==='mock') { renderMockHistory(); }
+  else if(tab==='prog') renderProgress();
+  else if(tab==='bookmarks') renderBookmarks();
+  else if(tab==='daily') renderDaily();
+  else if(tab==='revision') renderRevision();
+  else if(tab==='weak') renderWeakTopics();
+  else if(tab==='syllabus') renderSyllabusPanel();
+  else if(tab==='manage') renderManagePanel();
+  else if(tab==='supabase') renderSupabasePanel();
+}
+
+// ══════════════════════════════════════════════
+// STATS HELPERS
+// ══════════════════════════════════════════════
+function totalTopics() { return SYLLABUS.reduce((a,s)=>a+s.topics.length,0); }
+function totalQ() { return SYLLABUS.reduce((a,s)=>a+s.topics.reduce((b,t)=>b+(QDB[t.id]?.length||0),0),0); }
+function totalAttempted() { return Object.values(progress).reduce((a,v)=>a+(v.attempted||0),0); }
+function totalCorrect() { return Object.values(progress).reduce((a,v)=>a+(v.correct||0),0); }
+function findTopic(tid) {
+  for(const s of SYLLABUS) { const t = s.topics.find(x=>x.id===tid); if(t) return {subject:s, topic:t}; }
+  return null;
+}
+function updateHeaderStats() {
+  const att = totalAttempted(), cor = totalCorrect();
+  const acc = att ? Math.round(cor/att*100)+'%' : '—';
+  document.getElementById('hQ').textContent = totalQ();
+  document.getElementById('hA').textContent = att;
+  document.getElementById('hS').textContent = acc;
+}
+function getTodayKey() { return new Date().toISOString().split('T')[0]; }
+function bumpDaily() {
+  const k = getTodayKey();
+  dailyData[k] = (dailyData[k]||0)+1;
+  saveDaily();
+}
+
+// ══════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════
+function renderHome() {
+  updateHeaderStats();
+  document.getElementById('hcSubj').textContent = SYLLABUS.length;
+  document.getElementById('hcTopic').textContent = totalTopics();
+  document.getElementById('hcQ').textContent = totalQ();
+  renderHomeDailyWidget();
+
+  const grid = document.getElementById('homeSubjGrid');
+  if(SYLLABUS.length===0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="eic">📚</div><p>अभी कोई Subject नहीं है।<br>सिलेबस प्रबंधन टैब से शुरू करें।</p><button class="btn sm" onclick="goTab('syllabus')">Subject जोड़ें</button></div>`;
+    return;
+  }
+  grid.innerHTML = SYLLABUS.map(s=>{
+    const q = s.topics.reduce((a,t)=>a+(QDB[t.id]?.length||0),0);
+    const att = s.topics.reduce((a,t)=>a+(progress[t.id]?.attempted||0),0);
+    const maxAtt = Math.max(s.topics.reduce((a,t)=>a+Math.max(QDB[t.id]?.length||0,1),0),1);
+    const pct = Math.min(100, Math.round(att/maxAtt*100));
+    return `<div class="subj-card" onclick="openSubject('${s.id}')">
+      <div class="sic">${s.icon}</div>
+      <div class="snm">${escHtml(s.name)}</div>
+      <div class="sct">${s.topics.length} टॉपिक · ${q} प्रश्न</div>
+      <div class="sbar"><i style="width:${pct}%"></i></div>
+    </div>`;
+  }).join('');
+}
+function renderHomeDailyWidget() {
+  const el = document.getElementById('homeDailyWidget');
+  if(!el) return;
+  const today = getTodayKey();
+  const done = dailyData[today]||0;
+  const pct = Math.min(100, Math.round(done/dailyGoal*100));
+  const ring = `conic-gradient(var(--saffron) 0% ${pct}%,rgba(0,0,0,.08) ${pct}% 100%)`;
+  let streak=0; let d=new Date();
+  while(true){ const k=d.toISOString().split('T')[0]; if((dailyData[k]||0)>=dailyGoal){streak++;d.setDate(d.getDate()-1);}else break; }
+  el.innerHTML=`<div style="background:linear-gradient(135deg,var(--navy),var(--light-navy));border-radius:13px;padding:13px 16px;margin-bottom:14px;display:flex;align-items:center;gap:14px;cursor:pointer" onclick="goTab('daily')">
+    <div style="width:54px;height:54px;border-radius:50%;background:${ring};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <div style="width:40px;height:40px;border-radius:50%;background:#1a2a5e;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:${pct>=100?'var(--green)':'var(--gold)'};">${pct}%</div>
+    </div>
+    <div style="flex:1">
+      <div style="color:#fff;font-weight:700;font-size:.88rem">🎯 आज का लक्ष्य: ${done}/${dailyGoal} प्रश्न</div>
+      <div style="height:5px;background:rgba(255,255,255,.12);border-radius:3px;margin:5px 0"><div style="width:${pct}%;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--saffron),var(--gold));transition:width .6s"></div></div>
+      <div style="color:rgba(255,255,255,.6);font-size:.72rem">🔥 Streak: ${streak} दिन ${pct>=100?'| ✅ लक्ष्य पूरा!':''}</div>
+    </div>
+    <div style="color:rgba(255,255,255,.4);font-size:1.2rem">›</div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// SUBJECT DRILL-DOWN
+// ══════════════════════════════════════════════
+function openSubject(sid) {
+  activeSubjectId = sid;
+  const s = SYLLABUS.find(x=>x.id===sid);
+  if(!s) return;
+  document.getElementById('svTitle').textContent = `${s.icon} ${s.name}`;
+  document.getElementById('bcText').textContent = s.name;
+  const listEl = document.getElementById('svTopicList');
+  if(s.topics.length===0) {
+    listEl.innerHTML = `<div class="empty-state"><div class="eic">📝</div><p>इस Subject में अभी कोई Micro-topic नहीं है।</p><button class="btn sm" onclick="goTab('syllabus')">सिलेबस में जाकर Topic जोड़ें</button></div>`;
+  } else {
+    listEl.innerHTML = s.topics.map(t=>{
+      const qcount = QDB[t.id]?.length || 0;
+      const prog2 = progress[t.id]||{};
+      const acc = prog2.attempted ? Math.round((prog2.correct||0)/prog2.attempted*100) : null;
+      const bClass = t.avg>=1.5?'bh':t.avg>=0.5?'bm':'bl';
+      const bText = t.avg>=1.5?'🔥 उच्च':t.avg>=0.5?'⚡ मध्यम':'💡 कम';
+      return `<div class="topic-row" onclick="openTopicQuizSetup('${t.id}')">
+        <div class="tinfo">
+          <div class="tnm">${escHtml(t.name)}</div>
+          <div class="tm">वेटेज: ${t.avg}/पेपर | प्रश्न: ${qcount}${acc!==null?" | सटीकता: "+acc+"%":""}</div>
+        </div>
+        <span class="badge ${bClass}">${bText}</span>
+        <span class="tarrow">›</span>
+      </div>`;
+    }).join('');
+  }
+  goTab('subjectView');
+}
+function openTopicQuizSetup(tid) {
+  const found = findTopic(tid);
+  if(!found) return;
+  const qcount = QDB[tid]?.length || 0;
+  if(qcount===0) {
+    alert('इस टॉपिक में अभी कोई प्रश्न नहीं है। पहले "प्रश्न प्रबंधन" टैब से प्रश्न जोड़ें।');
+    return;
+  }
+  quizSourceTopicId = tid;
+  quizIsRevision = false;
+  document.getElementById('qsTitle').textContent = `🎮 ${found.topic.name} — Quiz सेटअप`;
+  document.getElementById('bcText').textContent = found.topic.name;
+  const sel = document.getElementById('qsCount');
+  sel.innerHTML = `<option value="10">10 प्रश्न</option><option value="20" ${qcount>=20?'selected':''}>20 प्रश्न</option><option value="30">30 प्रश्न</option><option value="all">सभी उपलब्ध (${qcount})</option>`;
+  goTab('quizSetup');
+}
+function startTopicQuiz() {
+  const count = document.getElementById('qsCount').value;
+  quizMode = document.getElementById('qsMode').value;
+  let pool = [...(QDB[quizSourceTopicId]||[])];
+  shuffleArr(pool);
+  if(count!=='all') pool = pool.slice(0, parseInt(count));
+  launchQuiz(pool, quizSourceTopicId, findTopic(quizSourceTopicId).topic.name);
+}
+
+// ══════════════════════════════════════════════
+// QUIZ ENGINE
+// ══════════════════════════════════════════════
+function launchQuiz(questions, topicId, label) {
+  if(questions.length===0) { alert('कोई प्रश्न उपलब्ध नहीं।'); return; }
+  quizQueue = questions;
+  quizIdx = 0;
+  quizResults = [];
+  quizContext = label;
+  quizSeconds = 0;
+  quizAnswered = false;
+  document.getElementById('bcText').textContent = label;
+  clearInterval(quizTimerInterval);
+  quizTimerInterval = setInterval(()=>{ quizSeconds++; document.getElementById('quizTimer').textContent = fmtTime(quizSeconds); }, 1000);
+  goTab('quiz');
+  renderQuizQuestion();
+}
+function renderQuizQuestion() {
+  quizAnswered = false;
+  const q = quizQueue[quizIdx];
+  document.getElementById('quizProgTxt').textContent = `प्रश्न ${quizIdx+1}/${quizQueue.length}`;
+  document.getElementById('quizProgBar').style.width = ((quizIdx)/quizQueue.length*100)+'%';
+  const card = document.getElementById('quizQCard');
+  card.innerHTML = `<div class="q-text">${escHtml(q.q)}</div>` +
+    q.o.map((opt,i)=>`<div class="q-opt" data-i="${i}" onclick="selectOption(${i})"><span class="olabel">${String.fromCharCode(65+i)}</span><span>${escHtml(opt)}</span></div>`).join('') +
+    `<div id="qExpBox"></div>`;
+  document.getElementById('quizNextBtn').disabled = true;
+  document.getElementById('quizNextBtn').textContent = quizIdx===quizQueue.length-1 ? 'समाप्त करें ✓' : 'अगला →';
+  document.getElementById('quizSkipBtn').style.display = 'inline-flex';
+}
+function selectOption(i) {
+  if(quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQueue[quizIdx];
+  const correct = q.a;
+  document.querySelectorAll('.q-opt').forEach((el,idx)=>{
+    el.onclick = null;
+    if(idx===correct) el.classList.add('correct');
+    if(idx===i && i!==correct) el.classList.add('wrong');
+  });
+  const isCorrect = i===correct;
+  quizResults.push({q, selected:i, correct:isCorrect, skipped:false});
+  recordAnswer(quizSourceTopicId || activeQuizTopicFor(q), isCorrect, false);
+  if(!isCorrect) addToRevision(q);
+  if(quizMode==='practice') {
+    let html = '';
+    if(q.exp) html += `<div class="q-exp"><b>व्याख्या:</b> ${escHtml(q.exp)}</div>`;
+    if(q.src) html += `<div class="q-src">स्रोत: ${escHtml(q.src)}</div>`;
+    html += `<div style="margin-top:10px"><button class="btn sm ghost" onclick="bookmarkCurrentQ()">📌 Bookmark करें</button></div>`;
+    document.getElementById('qExpBox').innerHTML = html;
+  }
+  document.getElementById('quizNextBtn').disabled = false;
+  document.getElementById('quizSkipBtn').style.display = 'none';
+  bumpDaily();
+}
+function activeQuizTopicFor(q) {
+  // fallback: search all QDB for this question object if quizSourceTopicId wasn't set (mock/revision mode)
+  for(const tid in QDB) { if(QDB[tid].includes(q)) return tid; }
+  return quizSourceTopicId;
+}
+function quizSkip() {
+  if(quizAnswered) return;
+  const q = quizQueue[quizIdx];
+  quizResults.push({q, selected:-1, correct:false, skipped:true});
+  const tid = quizSourceTopicId || activeQuizTopicFor(q);
+  recordAnswer(tid, false, true);
+  quizNext();
+}
+function recordAnswer(tid, correct, skipped) {
+  if(!tid) return;
+  if(!progress[tid]) progress[tid] = {attempted:0, correct:0, skipped:0};
+  if(skipped) { progress[tid].skipped++; }
+  else { progress[tid].attempted++; if(correct) progress[tid].correct++; }
+  saveProgress();
+}
+function quizNext() {
+  clearInterval(quizTimerInterval);
+  if(quizIdx < quizQueue.length-1) {
+    quizIdx++;
+    quizTimerInterval = setInterval(()=>{ quizSeconds++; document.getElementById('quizTimer').textContent = fmtTime(quizSeconds); }, 1000);
+    renderQuizQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+function quizExit() {
+  clearInterval(quizTimerInterval);
+  if(confirm('क्या आप वाकई Quiz छोड़ना चाहते हैं? प्रगति सेव हो चुकी है।')) {
+    goTab('home');
+  } else {
+    goTab('quiz', false);
+  }
+}
+function finishQuiz() {
+  clearInterval(quizTimerInterval);
+  const correct = quizResults.filter(r=>r.correct).length;
+  const skipped = quizResults.filter(r=>r.skipped).length;
+  const wrong = quizResults.length - correct - skipped;
+  const acc = quizResults.length ? Math.round(correct/quizResults.length*100) : 0;
+  document.getElementById('resPct').textContent = acc+'%';
+  document.getElementById('resTitle').textContent = quizContext + ' — परिणाम';
+  document.getElementById('resCorrect').textContent = correct;
+  document.getElementById('resWrong').textContent = wrong;
+  document.getElementById('resSkip').textContent = skipped;
+  const ring = document.getElementById('resultRing');
+  const color = acc>=70?'var(--green)':acc>=40?'var(--gold)':'var(--red)';
+  ring.style.background = `conic-gradient(${color} 0% ${acc}%, rgba(0,0,0,.08) ${acc}% 100%)`;
+  if(quizIsRevision) {
+    quizResults.forEach(r=>{
+      if(r.correct) {
+        const idx = revisionBank.findIndex(x=>x.q===r.q.q);
+        if(idx>-1) revisionBank[idx].mastered = true;
+      }
+    });
+    saveRevision();
+  }
+  goTab('quizResult');
+}
+function reviewQuiz() {
+  let html = quizResults.map((r,i)=>{
+    const q = r.q;
+    return `<div class="card" style="margin-bottom:10px">
+      <div style="font-size:.68rem;color:var(--muted);font-weight:700;margin-bottom:6px">प्रश्न ${i+1}</div>
+      <div class="q-text" style="font-size:.85rem">${escHtml(q.q)}</div>
+      ${q.o.map((opt,oi)=>{
+        let cls='q-opt';
+        if(oi===q.a) cls+=' correct';
+        else if(oi===r.selected) cls+=' wrong';
+        return `<div class="${cls}" style="cursor:default"><span class="olabel">${String.fromCharCode(65+oi)}</span><span>${escHtml(opt)}</span></div>`;
+      }).join('')}
+      ${q.exp?`<div class="q-exp"><b>व्याख्या:</b> ${escHtml(q.exp)}</div>`:''}
+    </div>`;
+  }).join('');
+  const panel = document.getElementById('panel-quizResult');
+  panel.innerHTML = `<div class="btn-row" style="margin-bottom:14px"><button class="btn sec" onclick="goTab('home')">🏠 होम पर जाएं</button></div>` + html;
+  panel.classList.add('on');
+}
+function bookmarkCurrentQ() {
+  const q = quizQueue[quizIdx];
+  const tid = quizSourceTopicId || activeQuizTopicFor(q);
+  if(bookmarks.some(b=>b.q===q.q)) { alert('पहले से Bookmark है।'); return; }
+  bookmarks.push({topicId:tid, q:q.q, o:q.o, a:q.a, exp:q.exp||'', src:q.src||''});
+  saveBookmarks();
+  alert('📌 Bookmark हो गया!');
+}
+function addToRevision(q) {
+  if(revisionBank.some(r=>r.q===q.q)) return;
+  revisionBank.push({q:q.q, o:q.o, a:q.a, exp:q.exp||'', src:q.src||'', mastered:false});
+  saveRevision();
+}
+
+// ══════════════════════════════════════════════
+// MOCK TEST
+// ══════════════════════════════════════════════
+function startMock() {
+  const count = parseInt(document.getElementById('mockCount').value);
+  const weighted = document.getElementById('mockWeighted').value==='yes';
+  let allTopics = [];
+  SYLLABUS.forEach(s=>s.topics.forEach(t=>{ if(QDB[t.id]?.length) allTopics.push(t); }));
+  if(allTopics.length===0) {
+    showStatus('mockStatus', '❌ किसी भी टॉपिक में प्रश्न नहीं हैं। पहले प्रश्न जोड़ें।', 'err');
+    return;
+  }
+  let pool = [];
+  if(weighted) {
+    const totalWt = allTopics.reduce((a,t)=>a+(t.avg||0.1),0) || 1;
+    allTopics.forEach(t=>{
+      const share = Math.max(1, Math.round((t.avg||0.1)/totalWt*count));
+      const qs = [...QDB[t.id]]; shuffleArr(qs);
+      pool.push(...qs.slice(0, share));
+    });
+  } else {
+    const perTopic = Math.max(1, Math.floor(count/allTopics.length));
+    allTopics.forEach(t=>{
+      const qs = [...QDB[t.id]]; shuffleArr(qs);
+      pool.push(...qs.slice(0, perTopic));
+    });
+  }
+  shuffleArr(pool);
+  pool = pool.slice(0, count);
+  if(pool.length < count) {
+    // top up randomly if short
+    let all = [];
+    allTopics.forEach(t=>all.push(...QDB[t.id]));
+    shuffleArr(all);
+    for(const q of all) { if(pool.length>=count) break; if(!pool.includes(q)) pool.push(q); }
+  }
+  quizSourceTopicId = null;
+  quizIsRevision = false;
+  launchQuiz(pool, `🏆 Mock Test (${pool.length} प्रश्न)`);
+  // record mock in history after finish — hook via finishQuiz override
+  const timeLimit = parseInt(document.getElementById('mockTime').value);
+  showStatus('mockStatus', `✅ ${pool.length} प्रश्नों का Mock Test शुरू — समय सीमा ${timeLimit} मिनट (टाइमर ऊपर चल रहा है, स्वयं ध्यान रखें)`, 'ok');
+}
+function renderMockHistory() {
+  const el = document.getElementById('mockHistList');
+  if(mockHistory.length===0) { el.innerHTML = `<div class="syl-empty-topics">अभी कोई Mock Test नहीं दिया।</div>`; return; }
+  el.innerHTML = mockHistory.slice().reverse().map(m=>`
+    <div class="topic-row" style="cursor:default">
+      <div class="tinfo">
+        <div class="tnm">${m.date}</div>
+        <div class="tm">${m.total} प्रश्न | सही: ${m.correct} | समय: ${fmtTime(m.seconds)}</div>
+      </div>
+      <span class="badge ${m.acc>=60?'bl':m.acc>=40?'bm':'bh'}">${m.acc}%</span>
+    </div>`).join('');
+}
+function toggleMockHist() {
+  const el = document.getElementById('mockHistList');
+  const chev = document.getElementById('mhChev');
+  const show = el.style.display==='none';
+  el.style.display = show?'block':'none';
+  chev.textContent = show?'▴':'▾';
+}
+// hook into finishQuiz for mock recording
+const _origFinishQuiz = finishQuiz;
+finishQuiz = function() {
+  const wasMock = quizContext.startsWith('🏆');
+  _origFinishQuiz();
+  if(wasMock) {
+    const correct = quizResults.filter(r=>r.correct).length;
+    mockHistory.push({date:new Date().toLocaleDateString('hi-IN'), total:quizResults.length, correct, acc:Math.round(correct/quizResults.length*100), seconds:quizSeconds});
+    saveMocks();
+  }
+};
+
+// ══════════════════════════════════════════════
+// PROGRESS
+// ══════════════════════════════════════════════
+function renderProgress() {
+  document.getElementById('pgC').textContent = totalCorrect();
+  const att = totalAttempted();
+  document.getElementById('pgW').textContent = att - totalCorrect();
+  document.getElementById('pgS').textContent = Object.values(progress).reduce((a,v)=>a+(v.skipped||0),0);
+  const el = document.getElementById('progSubjList');
+  if(SYLLABUS.length===0) { el.innerHTML = `<div class="syl-empty-topics">कोई सिलेबस नहीं जोड़ा गया।</div>`; return; }
+  el.innerHTML = SYLLABUS.map(s=>{
+    const a = s.topics.reduce((x,t)=>x+(progress[t.id]?.attempted||0),0);
+    const c = s.topics.reduce((x,t)=>x+(progress[t.id]?.correct||0),0);
+    const acc = a? Math.round(c/a*100):null;
+    return `<div class="topic-row" onclick="openSubject('${s.id}')">
+      <div class="tinfo"><div class="tnm">${s.icon} ${escHtml(s.name)}</div><div class="tm">हल किए: ${a}${acc!==null?" | सटीकता: "+acc+"%":" | अभी शुरू नहीं"}</div></div>
+      <span class="tarrow">›</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// BOOKMARKS
+// ══════════════════════════════════════════════
+function renderBookmarks() {
+  document.getElementById('bmCount').textContent = bookmarks.length;
+  const el = document.getElementById('bmList');
+  if(bookmarks.length===0) { el.innerHTML = `<div class="syl-empty-topics">कोई Bookmark नहीं है। Quiz खेलते समय प्रश्नों को Bookmark करें।</div>`; return; }
+  el.innerHTML = bookmarks.map((b,i)=>`
+    <div class="bm-item">
+      <div class="bm-q">${escHtml(b.q)}</div>
+      <div class="bm-a">✓ ${escHtml(b.o[b.a])}</div>
+      ${b.exp?`<div style="font-size:.74rem;color:var(--muted);margin-bottom:8px">${escHtml(b.exp)}</div>`:''}
+      <button class="btn sm sec" onclick="removeBookmark(${i})">हटाएं</button>
+    </div>`).join('');
+}
+function removeBookmark(i) { bookmarks.splice(i,1); saveBookmarks(); renderBookmarks(); }
+
+// ══════════════════════════════════════════════
+// DAILY
+// ══════════════════════════════════════════════
+function renderDaily() {
+  document.getElementById('dailyGoalInput').value = dailyGoal;
+  const today = getTodayKey();
+  const done = dailyData[today]||0;
+  const pct = Math.min(100, Math.round(done/dailyGoal*100));
+  document.getElementById('dailyBigWidget').innerHTML = `<div style="text-align:center"><div style="font-size:2.2rem;font-weight:800;color:var(--saffron)">${done}/${dailyGoal}</div><div style="color:var(--muted);font-size:.8rem">आज हल किए गए प्रश्न</div></div>`;
+  const hist = document.getElementById('dailyHistory');
+  let rows = '';
+  for(let i=13;i>=0;i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const k = d.toISOString().split('T')[0];
+    const v = dailyData[k]||0;
+    const met = v>=dailyGoal;
+    rows += `<div class="topic-row" style="cursor:default"><div class="tinfo"><div class="tnm">${d.toLocaleDateString('hi-IN',{weekday:'short',day:'numeric',month:'short'})}</div></div><span class="badge ${met?'bl':v>0?'bm':'bh'}">${v} प्रश्न ${met?'✓':''}</span></div>`;
+  }
+  hist.innerHTML = rows;
+}
+function saveDailyGoal() {
+  const v = parseInt(document.getElementById('dailyGoalInput').value);
+  if(v>=5 && v<=200) { dailyGoal=v; saveDaily(); renderDaily(); alert('✅ लक्ष्य सेव हो गया'); }
+}
+
+// ══════════════════════════════════════════════
+// REVISION BANK
+// ══════════════════════════════════════════════
+function renderRevision() {
+  const active = revisionBank.filter(r=>!r.mastered);
+  document.getElementById('revCount').textContent = active.length;
+  const el = document.getElementById('revList');
+  if(active.length===0) { el.innerHTML = `<div class="syl-empty-topics">कोई गलत प्रश्न नहीं — बढ़िया!</div>`; return; }
+  el.innerHTML = active.map((r,i)=>`
+    <div class="bm-item">
+      <div class="bm-q">${escHtml(r.q)}</div>
+      <div class="bm-a">✓ ${escHtml(r.o[r.a])}</div>
+      ${r.exp?`<div style="font-size:.74rem;color:var(--muted)">${escHtml(r.exp)}</div>`:''}
+    </div>`).join('');
+}
+function startRevisionQuiz() {
+  const active = revisionBank.filter(r=>!r.mastered);
+  if(active.length===0) { alert('Revision Bank खाली है।'); return; }
+  const qs = active.map(r=>({q:r.q,o:r.o,a:r.a,exp:r.exp,src:r.src}));
+  quizSourceTopicId = null;
+  quizIsRevision = true;
+  launchQuiz(qs, '📕 Revision Bank Quiz');
+}
+function clearMasteredRevision() {
+  revisionBank = revisionBank.filter(r=>!r.mastered);
+  saveRevision();
+  renderRevision();
+}
+
+// ══════════════════════════════════════════════
+// WEAK TOPICS
+// ══════════════════════════════════════════════
+function renderWeakTopics() {
+  let rows = [];
+  SYLLABUS.forEach(s=>s.topics.forEach(t=>{
+    const p = progress[t.id];
+    if(p && p.attempted>=3) {
+      rows.push({name:t.name, subj:s.name, acc:Math.round(p.correct/p.attempted*100), attempted:p.attempted});
+    }
+  }));
+  rows.sort((a,b)=>a.acc-b.acc);
+  const el = document.getElementById('weakList');
+  if(rows.length===0) { el.innerHTML = `<div class="syl-empty-topics">अभी पर्याप्त डेटा नहीं है। कम से कम 3 प्रश्न हल करें किसी टॉपिक में।</div>`; return; }
+  el.innerHTML = rows.slice(0,20).map((r,i)=>`
+    <div class="weak-item">
+      <div class="wrank">${i+1}</div>
+      <div class="winfo"><div class="wnm">${escHtml(r.name)}</div><div class="wm">${escHtml(r.subj)} · ${r.attempted} प्रश्न हल किए</div></div>
+      <div class="wacc">${r.acc}%</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// SYLLABUS MANAGEMENT (NEW FEATURE)
+// ══════════════════════════════════════════════
+let selectedIcon = '📚';
+function renderIconPicker() {
+  const el = document.getElementById('iconPicker');
+  el.innerHTML = ICONS.map(ic=>`<div class="icon-opt ${ic===selectedIcon?'sel':''}" onclick="pickIcon('${ic}')">${ic}</div>`).join('');
+}
+function pickIcon(ic) { selectedIcon = ic; renderIconPicker(); }
+
+function renderSyllabusPanel() {
+  renderIconPicker();
+  const el = document.getElementById('syllabusList');
+  if(SYLLABUS.length===0) { el.innerHTML = `<div class="syl-empty-topics">अभी कोई Subject नहीं है — ऊपर से जोड़ें।</div>`; return; }
+  el.innerHTML = SYLLABUS.map(s=>{
+    const totalWt = s.topics.reduce((a,t)=>a+(t.avg||0),0);
+    return `
+    <div class="syl-subj-block">
+      <div class="syl-subj-head" onclick="toggleSylSubj('${s.id}')" id="sylhead-${s.id}">
+        <span class="sic">${s.icon}</span>
+        <span class="snm">${escHtml(s.name)}</span>
+        <span class="scount">${s.topics.length} topics · वेटेज ${totalWt.toFixed(1)}</span>
+        <span class="schev" id="sylchev-${s.id}">▸</span>
+      </div>
+      <div class="syl-subj-body" id="sylbody-${s.id}">
+        <div style="margin:10px 0 6px">
+          ${s.topics.length===0 ? '<div class="syl-empty-topics">कोई Micro-topic नहीं जोड़ा गया</div>' :
+            s.topics.map((t,ti)=>`
+            <div class="syl-topic-row">
+              <span class="ttxt">${escHtml(t.name)}</span>
+              <span class="twt">वेटेज: ${t.avg}</span>
+              <button class="ticon" onclick="editTopicWeight('${s.id}',${ti})" title="वेटेज बदलें">✏️</button>
+              <button class="ticon" onclick="deleteTopic('${s.id}',${ti})" title="हटाएं">🗑️</button>
+            </div>`).join('')}
+        </div>
+        <div class="syl-add-row">
+          <input type="text" id="newTopicName-${s.id}" placeholder="नया Micro-topic नाम">
+          <input type="number" step="0.1" min="0" class="wt-input" id="newTopicWt-${s.id}" placeholder="वेटेज" value="0.5">
+          <button class="btn sm" onclick="addTopic('${s.id}')">➕ जोड़ें</button>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn sm ghost" onclick="editSubjectName('${s.id}')">✏️ नाम बदलें</button>
+          <button class="btn sm danger" onclick="deleteSubject('${s.id}')">🗑️ Subject हटाएं</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleSylSubj(sid) {
+  const body = document.getElementById('sylbody-'+sid);
+  const head = document.getElementById('sylhead-'+sid);
+  const chev = document.getElementById('sylchev-'+sid);
+  const open = body.classList.contains('open');
+  document.querySelectorAll('.syl-subj-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.syl-subj-head').forEach(h=>h.classList.remove('open'));
+  if(!open) { body.classList.add('open'); head.classList.add('open'); }
+}
+function addSubject() {
+  const nameInput = document.getElementById('newSubjName');
+  const name = nameInput.value.trim();
+  if(!name) { showStatus('subjStatus', '❌ कृपया Subject का नाम लिखें', 'err'); return; }
+  const id = 'subj_' + Date.now().toString(36);
+  SYLLABUS.push({id, name, icon:selectedIcon, topics:[]});
+  saveSyllabus();
+  nameInput.value = '';
+  showStatus('subjStatus', `✅ "${name}" जोड़ दिया गया`, 'ok');
+  renderSyllabusPanel();
+}
+function editSubjectName(sid) {
+  const s = SYLLABUS.find(x=>x.id===sid);
+  if(!s) return;
+  const newName = prompt('Subject का नया नाम:', s.name);
+  if(newName && newName.trim()) { s.name = newName.trim(); saveSyllabus(); renderSyllabusPanel(); }
+}
+function deleteSubject(sid) {
+  const s = SYLLABUS.find(x=>x.id===sid);
+  if(!s) return;
+  if(!confirm(`क्या आप वाकई "${s.name}" को हटाना चाहते हैं? इसके सभी Micro-topics और उनके प्रश्न भी हट जाएंगे।`)) return;
+  s.topics.forEach(t=>{ delete QDB[t.id]; delete progress[t.id]; });
+  SYLLABUS = SYLLABUS.filter(x=>x.id!==sid);
+  saveSyllabus(); saveQDB(); saveProgress();
+  renderSyllabusPanel();
+}
+function addTopic(sid) {
+  const nameInput = document.getElementById('newTopicName-'+sid);
+  const wtInput = document.getElementById('newTopicWt-'+sid);
+  const name = nameInput.value.trim();
+  const wt = parseFloat(wtInput.value) || 0;
+  if(!name) return;
+  const s = SYLLABUS.find(x=>x.id===sid);
+  const id = 'topic_' + Date.now().toString(36) + Math.floor(Math.random()*1000);
+  s.topics.push({id, name, avg:wt});
+  saveSyllabus();
+  renderSyllabusPanel();
+  // re-open this subject after re-render
+  setTimeout(()=>toggleSylSubj(sid), 10);
+}
+function editTopicWeight(sid, ti) {
+  const s = SYLLABUS.find(x=>x.id===sid);
+  const t = s.topics[ti];
+  const newWt = prompt(`"${t.name}" का नया वेटेज (औसत प्रश्न संख्या):`, t.avg);
+  if(newWt!==null && !isNaN(parseFloat(newWt))) {
+    t.avg = parseFloat(newWt);
+    saveSyllabus();
+    renderSyllabusPanel();
+    setTimeout(()=>toggleSylSubj(sid), 10);
+  }
+}
+function deleteTopic(sid, ti) {
+  const s = SYLLABUS.find(x=>x.id===sid);
+  const t = s.topics[ti];
+  if(!confirm(`"${t.name}" को हटाएं? इसके सभी प्रश्न भी हट जाएंगे।`)) return;
+  delete QDB[t.id]; delete progress[t.id];
+  s.topics.splice(ti,1);
+  saveSyllabus(); saveQDB(); saveProgress();
+  renderSyllabusPanel();
+  setTimeout(()=>toggleSylSubj(sid), 10);
+}
+function exportSyllabus() {
+  const data = JSON.stringify(SYLLABUS, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'ras_syllabus_backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showStatus('syllabusIOStatus', '✅ सिलेबस डाउनलोड हो गया', 'ok');
+}
+function importSyllabusFile(evt) {
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(!Array.isArray(data)) throw new Error('Invalid format');
+      if(confirm('मौजूदा सिलेबस के साथ मिला दें (OK) या पूरी तरह बदल दें (Cancel)?')) {
+        // merge
+        data.forEach(newSubj=>{
+          const existing = SYLLABUS.find(s=>s.id===newSubj.id || s.name===newSubj.name);
+          if(existing) {
+            newSubj.topics.forEach(nt=>{ if(!existing.topics.some(et=>et.id===nt.id)) existing.topics.push(nt); });
+          } else {
+            SYLLABUS.push(newSubj);
+          }
+        });
+      } else {
+        SYLLABUS = data;
+      }
+      saveSyllabus();
+      showStatus('syllabusIOStatus', `✅ ${data.length} Subject import हुए`, 'ok');
+      renderSyllabusPanel();
+    } catch(err) {
+      showStatus('syllabusIOStatus', '❌ Invalid JSON फाइल', 'err');
+    }
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
+}
+
+// ══════════════════════════════════════════════
+// QUESTION MANAGEMENT
+// ══════════════════════════════════════════════
+function renderManagePanel() {
+  const sel = document.getElementById('manageTopicSelect');
+  if(totalTopics()===0) {
+    sel.innerHTML = `<option value="">— पहले सिलेबस प्रबंधन में Topic जोड़ें —</option>`;
+  } else {
+    sel.innerHTML = `<option value="">— टॉपिक चुनें —</option>` +
+      SYLLABUS.map(s=>`<optgroup label="${s.icon} ${escHtml(s.name)}">` +
+        s.topics.map(t=>`<option value="${t.id}">${escHtml(t.name)} (${QDB[t.id]?.length||0} प्रश्न)</option>`).join('') +
+      `</optgroup>`).join('');
+  }
+  document.getElementById('manageUploadArea').style.display = 'none';
+  renderManageOverview();
+
+  const dz = document.getElementById('jsonDropZone');
+  dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
+  dz.ondragleave = () => dz.classList.remove('drag');
+  dz.ondrop = e => {
+    e.preventDefault(); dz.classList.remove('drag');
+    if(e.dataTransfer.files[0]) handleJsonFile({target:{files:e.dataTransfer.files}});
+  };
+}
+function onManageTopicChange() {
+  const tid = document.getElementById('manageTopicSelect').value;
+  document.getElementById('manageUploadArea').style.display = tid ? 'block' : 'none';
+  document.getElementById('manageStatus').classList.remove('show');
+}
+function renderManageOverview() {
+  const el = document.getElementById('manageTopicOverview');
+  if(totalTopics()===0) { el.innerHTML = `<div class="syl-empty-topics">कोई Topic नहीं है।</div>`; return; }
+  let html = '';
+  SYLLABUS.forEach(s=>{
+    if(s.topics.length===0) return;
+    s.topics.forEach(t=>{
+      html += `<div class="qm-topic-item"><span class="qmi">${s.icon} ${escHtml(t.name)}</span><span class="qmc">${QDB[t.id]?.length||0} प्रश्न</span></div>`;
+    });
+  });
+  el.innerHTML = html || `<div class="syl-empty-topics">कोई Topic नहीं है।</div>`;
+}
+function validateQuestions(arr) {
+  const valid = [];
+  for(const q of arr) {
+    if(q && typeof q.q==='string' && Array.isArray(q.o) && q.o.length>=2 && typeof q.a==='number' && q.a>=0 && q.a<q.o.length) {
+      valid.push({q:q.q, o:q.o, a:q.a, exp:q.exp||'', src:q.src||'', diff:q.diff||'medium'});
+    }
+  }
+  return valid;
+}
+function pasteJsonSubmit() {
+  const tid = document.getElementById('manageTopicSelect').value;
+  if(!tid) return;
+  const raw = document.getElementById('jsonPasteArea').value.trim();
+  if(!raw) { showStatus('manageStatus', '❌ कृपया JSON पेस्ट करें', 'err'); return; }
+  try {
+    const data = JSON.parse(raw);
+    if(!Array.isArray(data)) throw new Error('Array होना चाहिए');
+    const valid = validateQuestions(data);
+    if(valid.length===0) { showStatus('manageStatus', '❌ कोई मान्य प्रश्न नहीं मिला। Format जांचें।', 'err'); return; }
+    if(!QDB[tid]) QDB[tid]=[];
+    QDB[tid].push(...valid);
+    saveQDB();
+    document.getElementById('jsonPasteArea').value = '';
+    showStatus('manageStatus', `✅ ${valid.length} प्रश्न सेव हुए! कुल: ${QDB[tid].length}`, 'ok');
+    renderManageOverview();
+    renderManagePanel();
+    document.getElementById('manageTopicSelect').value = tid;
+    onManageTopicChange();
+  } catch(e) {
+    showStatus('manageStatus', '❌ Invalid JSON: ' + e.message, 'err');
+  }
+}
+function handleJsonFile(evt) {
+  const tid = document.getElementById('manageTopicSelect').value;
+  if(!tid) return;
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(!Array.isArray(data)) throw new Error('Array होना चाहिए');
+      const valid = validateQuestions(data);
+      if(valid.length===0) { showStatus('manageStatus', '❌ कोई मान्य प्रश्न नहीं मिला।', 'err'); return; }
+      if(!QDB[tid]) QDB[tid]=[];
+      QDB[tid].push(...valid);
+      saveQDB();
+      showStatus('manageStatus', `✅ ${valid.length} प्रश्न फाइल से सेव हुए! कुल: ${QDB[tid].length}`, 'ok');
+      renderManageOverview();
+      renderManagePanel();
+      document.getElementById('manageTopicSelect').value = tid;
+      onManageTopicChange();
+    } catch(err) {
+      showStatus('manageStatus', '❌ Invalid JSON फाइल: ' + err.message, 'err');
+    }
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
+}
+
+// ══════════════════════════════════════════════
+// SUPABASE CLOUD SYNC
+// ══════════════════════════════════════════════
+let SB_URL = '', SB_KEY = '', sbConnected = false;
+function renderSupabasePanel() {
+  document.getElementById('sbUrl').value = SB_URL;
+  document.getElementById('sbKey').value = SB_KEY;
+  updateSbStatusBox();
+}
+function updateSbStatusBox() {
+  const box = document.getElementById('sbStatusBox');
+  if(sbConnected) {
+    box.className = 'sb-status ok';
+    box.textContent = `✅ Connected: ${SB_URL.replace('https://','').split('.')[0]}.supabase.co`;
+  } else {
+    box.className = 'sb-status';
+    box.textContent = '⚪ अभी कनेक्ट नहीं है';
+  }
+}
+async function sbFetch(path, method='GET', body=null) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method==='POST' ? 'resolution=merge-duplicates' : 'return=representation'
+    }
+  };
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, opts);
+  if(!res.ok) throw new Error('Supabase error: ' + res.status);
+  return res.json().catch(()=>null);
+}
+async function connectSupabase() {
+  const url = document.getElementById('sbUrl').value.trim().replace(/\/$/,'');
+  const key = document.getElementById('sbKey').value.trim();
+  if(!url || !key) { showStatus('sbActionStatus', '❌ URL और Key दोनों भरें', 'err'); return; }
+  SB_URL = url; SB_KEY = key;
+  try {
+    await sbFetch('rpsc_progress?id=eq.main&select=id');
+    sbConnected = true;
+    localStorage.setItem('ras_sb_url', SB_URL);
+    localStorage.setItem('ras_sb_key', SB_KEY);
+    updateSbStatusBox();
+    showStatus('sbActionStatus', '✅ Supabase से कनेक्ट हो गया!', 'ok');
+  } catch(e) {
+    sbConnected = false;
+    updateSbStatusBox();
+    showStatus('sbActionStatus', '❌ कनेक्ट नहीं हो पाया। URL/Key जांचें, या SQL Setup पूरा करें।', 'err');
+  }
+}
+async function syncToCloud() {
+  if(!sbConnected) { showStatus('sbActionStatus', '❌ पहले कनेक्ट करें', 'err'); return; }
+  try {
+    showStatus('sbActionStatus', '⏳ Upload हो रहा है...', 'ok');
+    await sbFetch('rpsc_syllabus', 'POST', {id:'main', data:SYLLABUS, updated_at:new Date().toISOString()});
+    for(const tid in QDB) {
+      await sbFetch('rpsc_questions', 'POST', {id:tid, questions:QDB[tid], updated_at:new Date().toISOString()});
+    }
+    await sbFetch('rpsc_progress', 'POST', {id:'main', data:{progress,bookmarks,revisionBank,dailyData,dailyGoal,mockHistory}, updated_at:new Date().toISOString()});
+    showStatus('sbActionStatus', '✅ सब कुछ Cloud पर Upload हो गया!', 'ok');
+  } catch(e) {
+    showStatus('sbActionStatus', '❌ Upload में समस्या: ' + e.message, 'err');
+  }
+}
+async function syncFromCloud() {
+  if(!sbConnected) { showStatus('sbActionStatus', '❌ पहले कनेक्ट करें', 'err'); return; }
+  if(!confirm('यह आपके इस device के डेटा को Cloud के डेटा से बदल देगा। जारी रखें?')) return;
+  try {
+    showStatus('sbActionStatus', '⏳ Download हो रहा है...', 'ok');
+    const syl = await sbFetch('rpsc_syllabus?id=eq.main&select=data');
+    if(syl && syl[0]) { SYLLABUS = syl[0].data; saveSyllabus(); }
+    const qRows = await sbFetch('rpsc_questions?select=id,questions');
+    if(qRows) { qRows.forEach(r=>{ QDB[r.id] = r.questions; }); saveQDB(); }
+    const prog = await sbFetch('rpsc_progress?id=eq.main&select=data');
+    if(prog && prog[0]) {
+      const d = prog[0].data;
+      progress = d.progress||{}; bookmarks = d.bookmarks||[]; revisionBank = d.revisionBank||[];
+      dailyData = d.dailyData||{}; dailyGoal = d.dailyGoal||20; mockHistory = d.mockHistory||[];
+      saveProgress(); saveBookmarks(); saveRevision(); saveDaily(); saveMocks();
+    }
+    showStatus('sbActionStatus', '✅ Cloud से सब कुछ Download हो गया!', 'ok');
+    renderHome();
+  } catch(e) {
+    showStatus('sbActionStatus', '❌ Download में समस्या: ' + e.message, 'err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════
+function escHtml(s) { const d=document.createElement('div'); d.textContent=s??''; return d.innerHTML; }
+function shuffleArr(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function fmtTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+function showStatus(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `status-msg show ${type}`;
+  setTimeout(()=>el.classList.remove('show'), 5000);
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+function init() {
+  loadAll();
+  updateHeaderStats();
+  renderHome();
+  if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+}
+init();
+</script>
+</body>
+</html>

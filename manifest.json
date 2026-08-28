@@ -1,0 +1,28 @@
+{
+  "name": "RAS Pre Quiz - सिलेबस आधारित प्रैक्टिस",
+  "short_name": "RAS Pre Quiz",
+  "description": "RAS Pre परीक्षा हेतु स्वयं-निर्मित सिलेबस आधारित Quiz App",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0D1B3E",
+  "theme_color": "#FF6B00",
+  "orientation": "portrait-primary",
+  "lang": "hi",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["education"]
+}
