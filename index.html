@@ -749,6 +749,17 @@ function loadAll() {
   } catch(e) {}
 }
 
+async function autoReconnectSupabase() {
+  if(!SB_URL || !SB_KEY) return;
+  try {
+    await sbFetch('rpsc_progress?id=eq.main&select=id');
+    sbConnected = true;
+  } catch(e) {
+    sbConnected = false;
+  }
+  if(document.getElementById('sbStatusBox')) updateSbStatusBox();
+}
+
 function saveSyllabus() { localStorage.setItem('ras_syllabus', JSON.stringify(SYLLABUS)); }
 function saveQDB() { localStorage.setItem('ras_qdb', JSON.stringify(QDB)); }
 function saveProgress() { localStorage.setItem('ras_progress', JSON.stringify(progress)); }
@@ -1797,7 +1808,8 @@ async function connectSupabase() {
   }
 }
 async function syncToCloud() {
-  if(!sbConnected) { showStatus('sbActionStatus', '❌ पहले कनेक्ट करें', 'err'); return; }
+  if(!sbConnected) await autoReconnectSupabase();
+  if(!sbConnected) { showStatus('sbActionStatus', '❌ पहले कनेक्ट करें (URL/Key जांचें)', 'err'); return; }
   try {
     showStatus('sbActionStatus', '⏳ Upload हो रहा है...', 'ok');
     await sbFetch('rpsc_syllabus', 'POST', {id:'main', data:SYLLABUS, updated_at:new Date().toISOString()});
@@ -1811,14 +1823,16 @@ async function syncToCloud() {
   }
 }
 async function syncFromCloud() {
-  if(!sbConnected) { showStatus('sbActionStatus', '❌ पहले कनेक्ट करें', 'err'); return; }
+  if(!sbConnected) await autoReconnectSupabase();
+  if(!sbConnected) { showStatus('sbActionStatus', '❌ पहले कनेक्ट करें (URL/Key जांचें)', 'err'); return; }
   if(!confirm('यह आपके इस device के डेटा को Cloud के डेटा से बदल देगा। जारी रखें?')) return;
   try {
     showStatus('sbActionStatus', '⏳ Download हो रहा है...', 'ok');
     const syl = await sbFetch('rpsc_syllabus?id=eq.main&select=data');
     if(syl && syl[0]) { SYLLABUS = syl[0].data; saveSyllabus(); }
     const qRows = await sbFetch('rpsc_questions?select=id,questions');
-    if(qRows) { qRows.forEach(r=>{ QDB[r.id] = r.questions; }); saveQDB(); }
+    let qCount = 0;
+    if(qRows) { qRows.forEach(r=>{ QDB[r.id] = r.questions||[]; qCount += (r.questions||[]).length; }); saveQDB(); }
     const prog = await sbFetch('rpsc_progress?id=eq.main&select=data');
     if(prog && prog[0]) {
       const d = prog[0].data;
@@ -1826,7 +1840,8 @@ async function syncFromCloud() {
       dailyData = d.dailyData||{}; dailyGoal = d.dailyGoal||20; mockHistory = d.mockHistory||[];
       saveProgress(); saveBookmarks(); saveRevision(); saveDaily(); saveMocks();
     }
-    showStatus('sbActionStatus', '✅ Cloud से सब कुछ Download हो गया!', 'ok');
+    showStatus('sbActionStatus', `✅ Download हो गया! (${qRows?qRows.length:0} topic rows, ${qCount} प्रश्न)`, 'ok');
+    updateHeaderStats();
     renderHome();
   } catch(e) {
     showStatus('sbActionStatus', '❌ Download में समस्या: ' + e.message, 'err');
@@ -1853,6 +1868,7 @@ function init() {
   loadAll();
   updateHeaderStats();
   renderHome();
+  autoReconnectSupabase();
   if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
   }
