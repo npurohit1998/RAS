@@ -195,6 +195,38 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:linear-gradient(13
 
 .json-area{width:100%;min-height:140px;padding:12px;border:1.5px solid rgba(0,0,0,.15);border-radius:10px;font-family:'Courier New',monospace;font-size:.75rem;resize:vertical}
 .drop-zone{border:2px dashed rgba(0,0,0,.2);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:var(--t);color:var(--muted);font-size:.8rem}
+
+/* ── QUESTION MANAGEMENT: browse / delete / manual add ── */
+.qm-mode-row{display:flex;gap:8px;margin-bottom:14px}
+.qm-mode-row .btn{flex:1}
+.qm-subj-block{margin-bottom:10px;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.02)}
+.qm-subj-head{display:flex;align-items:center;gap:10px;padding:11px 12px;cursor:pointer;user-select:none}
+.qm-subj-head .sic{font-size:1.05rem}
+.qm-subj-head .snm{flex:1;font-size:.82rem;font-weight:700;color:var(--deep-navy)}
+.qm-subj-head .scount{font-size:.68rem;color:var(--muted);background:rgba(0,0,0,.05);padding:3px 9px;border-radius:20px}
+.qm-subj-head .schev{color:var(--muted);transition:var(--t)}
+.qm-subj-head.open .schev{transform:rotate(90deg)}
+.qm-subj-body{display:none;padding:0 10px 10px}
+.qm-subj-body.open{display:block}
+.qm-topic-sub{margin-bottom:8px}
+.qm-topic-sub-head{display:flex;align-items:center;gap:8px;padding:8px 8px;cursor:pointer;font-size:.76rem;font-weight:700;color:var(--text)}
+.qm-topic-sub-head .qtn{flex:1}
+.qm-topic-sub-head .qtc{font-size:.66rem;color:var(--muted);background:#fff;padding:2px 8px;border-radius:20px}
+.qm-qlist{display:none;padding-left:4px}
+.qm-qlist.open{display:block}
+.qm-qrow{display:flex;align-items:flex-start;gap:8px;background:#fff;border-radius:9px;padding:9px 10px;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.qm-qrow .qm-qtext{flex:1;font-size:.76rem;line-height:1.45;color:var(--text)}
+.qm-qrow .qm-qmeta{display:block;font-size:.64rem;color:var(--muted);margin-top:3px}
+.qm-qrow .qm-qactions{display:flex;gap:4px;flex-shrink:0}
+.qm-qrow .ticon{background:transparent;border:none;cursor:pointer;font-size:.85rem;color:var(--muted);padding:4px;flex-shrink:0}
+.qm-qrow .ticon:hover{color:var(--saffron)}
+.qm-empty-mini{font-size:.72rem;color:var(--muted);padding:8px;text-align:center}
+
+.manual-opt-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.manual-opt-row input[type="radio"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--saffron)}
+.manual-opt-row input[type="text"]{flex:1;padding:9px 11px;border:1px solid rgba(0,0,0,.15);border-radius:8px;font-family:inherit;font-size:.83rem}
+.manual-opt-row .olabel-sm{width:20px;flex-shrink:0;font-size:.72rem;font-weight:700;color:var(--muted);text-align:center}
+.field-label{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:5px;display:block}
 .drop-zone:hover,.drop-zone.drag{border-color:var(--saffron);background:rgba(255,107,0,.05)}
 
 .qm-topic-item{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:10px;padding:11px 14px;margin-bottom:7px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
@@ -512,25 +544,66 @@ body{font-family:'Noto Sans Devanagari',sans-serif;background:linear-gradient(13
 
   <!-- QUESTION MANAGEMENT -->
   <div class="panel" id="panel-manage">
-    <div class="notice"><b>⚙️ प्रश्न प्रबंधन</b> — पहले "📚 सिलेबस प्रबंधन" में Subject और Micro-topic बना लें, फिर यहाँ से उस टॉपिक में JSON प्रश्न जोड़ें।</div>
+    <div class="notice"><b>⚙️ प्रश्न प्रबंधन</b> — पहले "📚 सिलेबस प्रबंधन" में Subject और Micro-topic बना लें, फिर यहाँ से उस टॉपिक में प्रश्न जोड़ें, देखें या हटाएं।</div>
+
     <div class="card">
-      <div class="ctitle">कौनसे टॉपिक में प्रश्न जोड़ने हैं?</div>
+      <div class="ctitle">कौनसे टॉपिक में काम करना है?</div>
       <div class="form-row">
         <select id="manageTopicSelect" onchange="onManageTopicChange()"></select>
       </div>
       <div id="manageUploadArea" style="display:none">
-        <div class="drop-zone" id="jsonDropZone" onclick="document.getElementById('jsonFileInput').click()">
-          📁 यहाँ क्लिक करें या JSON फाइल drag करें
-          <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="handleJsonFile(event)">
+        <div class="qm-mode-row">
+          <button class="btn sm" id="qmModeBtnUpload" onclick="setManageMode('upload')">📁 JSON अपलोड</button>
+          <button class="btn sm sec" id="qmModeBtnManual" onclick="setManageMode('manual')">✍️ मैन्युअल जोड़ें</button>
         </div>
-        <div style="text-align:center;margin:10px 0;color:var(--muted);font-size:.72rem">— या —</div>
-        <textarea class="json-area" id="jsonPasteArea" placeholder='[{"q":"प्रश्न यहाँ लिखें","o":["विकल्प A","विकल्प B","विकल्प C","विकल्प D"],"a":1,"exp":"व्याख्या (वैकल्पिक)","src":"स्रोत (वैकल्पिक)","diff":"medium"}]'></textarea>
-        <button class="btn block" style="margin-top:10px" onclick="pasteJsonSubmit()">प्रश्न सेव करें</button>
+
+        <div id="qmUploadMode">
+          <div class="drop-zone" id="jsonDropZone" onclick="document.getElementById('jsonFileInput').click()">
+            📁 यहाँ क्लिक करें या JSON फाइल drag करें
+            <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="handleJsonFile(event)">
+          </div>
+          <div style="text-align:center;margin:10px 0;color:var(--muted);font-size:.72rem">— या JSON पेस्ट करें (एक सवाल हो या कई, दोनों चलेंगे) —</div>
+          <textarea class="json-area" id="jsonPasteArea" placeholder='[{"q":"प्रश्न यहाँ लिखें","o":["विकल्प A","विकल्प B","विकल्प C","विकल्प D"],"a":1,"exp":"व्याख्या (वैकल्पिक)","src":"स्रोत (वैकल्पिक)","diff":"medium"}]'></textarea>
+          <button class="btn block" style="margin-top:10px" onclick="pasteJsonSubmit()">प्रश्न सेव करें</button>
+        </div>
+
+        <div id="qmManualMode" style="display:none">
+          <div class="form-row">
+            <label class="field-label">प्रश्न</label>
+            <textarea id="manQText" placeholder="यहाँ प्रश्न लिखें" style="min-height:60px"></textarea>
+          </div>
+          <div class="form-row">
+            <label class="field-label">विकल्प (सही वाले पर ⚪ चुनें)</label>
+            <div class="manual-opt-row"><span class="olabel-sm">A</span><input type="radio" name="manCorrect" value="0" checked><input type="text" id="manOpt0" placeholder="विकल्प A"></div>
+            <div class="manual-opt-row"><span class="olabel-sm">B</span><input type="radio" name="manCorrect" value="1"><input type="text" id="manOpt1" placeholder="विकल्प B"></div>
+            <div class="manual-opt-row"><span class="olabel-sm">C</span><input type="radio" name="manCorrect" value="2"><input type="text" id="manOpt2" placeholder="विकल्प C"></div>
+            <div class="manual-opt-row"><span class="olabel-sm">D</span><input type="radio" name="manCorrect" value="3"><input type="text" id="manOpt3" placeholder="विकल्प D"></div>
+          </div>
+          <div class="form-row">
+            <label class="field-label">व्याख्या (वैकल्पिक)</label>
+            <textarea id="manExp" placeholder="व्याख्या" style="min-height:50px"></textarea>
+          </div>
+          <div class="form-row">
+            <label class="field-label">स्रोत (वैकल्पिक)</label>
+            <input type="text" id="manSrc" placeholder="जैसे: RAS Pre 2023">
+          </div>
+          <div class="form-row">
+            <label class="field-label">कठिनाई स्तर</label>
+            <select id="manDiff">
+              <option value="easy">आसान</option>
+              <option value="medium" selected>मध्यम</option>
+              <option value="hard">कठिन</option>
+            </select>
+          </div>
+          <button class="btn block" onclick="addManualQuestion()">➕ प्रश्न जोड़ें</button>
+        </div>
+
         <div class="status-msg" id="manageStatus"></div>
       </div>
     </div>
+
     <div class="card">
-      <div class="ctitle">📊 सभी टॉपिक — प्रश्न संख्या</div>
+      <div class="ctitle">📊 सभी टॉपिक — प्रश्न देखें व हटाएं</div>
       <div id="manageTopicOverview"></div>
     </div>
   </div>
@@ -1283,8 +1356,9 @@ function deleteSubject(sid) {
   const s = SYLLABUS.find(x=>x.id===sid);
   if(!s) return;
   if(!confirm(`क्या आप वाकई "${s.name}" को हटाना चाहते हैं? इसके सभी Micro-topics और उनके प्रश्न भी हट जाएंगे।`)) return;
-  s.topics.forEach(t=>{ delete QDB[t.id]; delete progress[t.id]; });
+  s.topics.forEach(t=>{ delete QDB[t.id]; delete progress[t.id]; qmOpenTopics.delete(t.id); });
   SYLLABUS = SYLLABUS.filter(x=>x.id!==sid);
+  qmOpenSubjects.delete(sid);
   saveSyllabus(); saveQDB(); saveProgress();
   renderSyllabusPanel();
 }
@@ -1317,7 +1391,7 @@ function deleteTopic(sid, ti) {
   const s = SYLLABUS.find(x=>x.id===sid);
   const t = s.topics[ti];
   if(!confirm(`"${t.name}" को हटाएं? इसके सभी प्रश्न भी हट जाएंगे।`)) return;
-  delete QDB[t.id]; delete progress[t.id];
+  delete QDB[t.id]; delete progress[t.id]; qmOpenTopics.delete(t.id);
   s.topics.splice(ti,1);
   saveSyllabus(); saveQDB(); saveProgress();
   renderSyllabusPanel();
@@ -1368,8 +1442,13 @@ function importSyllabusFile(evt) {
 // ══════════════════════════════════════════════
 // QUESTION MANAGEMENT
 // ══════════════════════════════════════════════
+let manageMode = 'upload'; // 'upload' | 'manual'
+let qmOpenSubjects = new Set(); // subject ids expanded in the browse/delete list
+let qmOpenTopics = new Set(); // topic ids expanded in the browse/delete list
+
 function renderManagePanel() {
   const sel = document.getElementById('manageTopicSelect');
+  const prevVal = sel.value;
   if(totalTopics()===0) {
     sel.innerHTML = `<option value="">— पहले सिलेबस प्रबंधन में Topic जोड़ें —</option>`;
   } else {
@@ -1377,65 +1456,271 @@ function renderManagePanel() {
       SYLLABUS.map(s=>`<optgroup label="${s.icon} ${escHtml(s.name)}">` +
         s.topics.map(t=>`<option value="${t.id}">${escHtml(t.name)} (${QDB[t.id]?.length||0} प्रश्न)</option>`).join('') +
       `</optgroup>`).join('');
+    if(prevVal && findTopic(prevVal)) sel.value = prevVal;
   }
-  document.getElementById('manageUploadArea').style.display = 'none';
+  document.getElementById('manageUploadArea').style.display = sel.value ? 'block' : 'none';
+  setManageMode(manageMode);
   renderManageOverview();
 
   const dz = document.getElementById('jsonDropZone');
-  dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
-  dz.ondragleave = () => dz.classList.remove('drag');
-  dz.ondrop = e => {
-    e.preventDefault(); dz.classList.remove('drag');
-    if(e.dataTransfer.files[0]) handleJsonFile({target:{files:e.dataTransfer.files}});
-  };
+  if(dz) {
+    dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
+    dz.ondragleave = () => dz.classList.remove('drag');
+    dz.ondrop = e => {
+      e.preventDefault(); dz.classList.remove('drag');
+      if(e.dataTransfer.files[0]) handleJsonFile({target:{files:e.dataTransfer.files}});
+    };
+  }
 }
 function onManageTopicChange() {
   const tid = document.getElementById('manageTopicSelect').value;
   document.getElementById('manageUploadArea').style.display = tid ? 'block' : 'none';
   document.getElementById('manageStatus').classList.remove('show');
+  // switching topics while mid-edit would otherwise save the edit into the wrong topic
+  if(editingQuestion && editingQuestion.tid !== tid) clearManualForm();
 }
+function setManageMode(mode) {
+  manageMode = mode;
+  const up = document.getElementById('qmUploadMode');
+  const man = document.getElementById('qmManualMode');
+  if(!up || !man) return;
+  up.style.display = mode==='upload' ? 'block' : 'none';
+  man.style.display = mode==='manual' ? 'block' : 'none';
+  document.getElementById('qmModeBtnUpload').className = mode==='upload' ? 'btn sm' : 'btn sm sec';
+  document.getElementById('qmModeBtnManual').className = mode==='manual' ? 'btn sm' : 'btn sm sec';
+  document.getElementById('manageStatus').classList.remove('show');
+}
+
+// ── BROWSE / DELETE ──
 function renderManageOverview() {
   const el = document.getElementById('manageTopicOverview');
   if(totalTopics()===0) { el.innerHTML = `<div class="syl-empty-topics">कोई Topic नहीं है।</div>`; return; }
   let html = '';
   SYLLABUS.forEach(s=>{
     if(s.topics.length===0) return;
-    s.topics.forEach(t=>{
-      html += `<div class="qm-topic-item"><span class="qmi">${s.icon} ${escHtml(t.name)}</span><span class="qmc">${QDB[t.id]?.length||0} प्रश्न</span></div>`;
-    });
+    const subjQCount = s.topics.reduce((a,t)=>a+(QDB[t.id]?.length||0),0);
+    const open = qmOpenSubjects.has(s.id);
+    html += `
+    <div class="qm-subj-block">
+      <div class="qm-subj-head${open?' open':''}" onclick="toggleQmSubj('${s.id}')">
+        <span class="sic">${s.icon}</span>
+        <span class="snm">${escHtml(s.name)}</span>
+        <span class="scount">${subjQCount} प्रश्न</span>
+        <span class="schev">▸</span>
+      </div>
+      <div class="qm-subj-body${open?' open':''}" id="qmsubj-${s.id}">
+        ${s.topics.map(t=>renderQmTopicSub(t)).join('') || '<div class="qm-empty-mini">कोई Micro-topic नहीं है</div>'}
+      </div>
+    </div>`;
   });
   el.innerHTML = html || `<div class="syl-empty-topics">कोई Topic नहीं है।</div>`;
 }
+function renderQmTopicSub(t) {
+  const qs = QDB[t.id] || [];
+  const open = qmOpenTopics.has(t.id);
+  return `
+  <div class="qm-topic-sub">
+    <div class="qm-topic-sub-head" onclick="toggleQmTopic('${t.id}')">
+      <span>${open?'▾':'▸'}</span>
+      <span class="qtn">${escHtml(t.name)}</span>
+      <span class="qtc">${qs.length} प्रश्न</span>
+    </div>
+    <div class="qm-qlist${open?' open':''}" id="qmtopic-${t.id}">
+      ${qs.length===0 ? '<div class="qm-empty-mini">इस टॉपिक में अभी कोई प्रश्न नहीं है</div>' :
+        qs.map((q,qi)=>`
+        <div class="qm-qrow">
+          <div class="qm-qtext">${escHtml(q.q)}
+            <span class="qm-qmeta">सही: ${String.fromCharCode(65+q.a)} · ${q.diff==='easy'?'आसान':q.diff==='hard'?'कठिन':'मध्यम'}</span>
+          </div>
+          <div class="qm-qactions">
+            <button class="ticon" title="Edit करें" onclick="editQuestion('${t.id}',${qi})">✏️</button>
+            <button class="ticon" title="हटाएं" onclick="deleteQuestion('${t.id}',${qi})">🗑️</button>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+function toggleQmSubj(sid) {
+  if(qmOpenSubjects.has(sid)) qmOpenSubjects.delete(sid); else qmOpenSubjects.add(sid);
+  renderManageOverview();
+}
+function toggleQmTopic(tid) {
+  if(qmOpenTopics.has(tid)) qmOpenTopics.delete(tid); else qmOpenTopics.add(tid);
+  renderManageOverview();
+}
+function deleteQuestion(tid, qi) {
+  const q = QDB[tid]?.[qi];
+  if(!q) return;
+  const preview = q.q.length>60 ? q.q.slice(0,60)+'…' : q.q;
+  if(!confirm(`इस प्रश्न को हटाएं?\n\n"${preview}"\n\n(पहले से Bookmark/Revision में सेव कॉपी सुरक्षित रहेगी।)`)) return;
+  QDB[tid].splice(qi,1);
+  saveQDB();
+  renderManageOverview();
+  renderManagePanel();
+  updateHeaderStats();
+  showStatus('manageStatus', '🗑️ प्रश्न हटा दिया गया', 'ok');
+}
+function editQuestion(tid, qi) {
+  const q = QDB[tid]?.[qi];
+  if(!q) return;
+  // populate the manual form with this question's data for quick editing
+  document.getElementById('manageTopicSelect').value = tid;
+  onManageTopicChange();
+  setManageMode('manual');
+  document.getElementById('manQText').value = q.q;
+  document.getElementById('manOpt0').value = q.o[0]||'';
+  document.getElementById('manOpt1').value = q.o[1]||'';
+  document.getElementById('manOpt2').value = q.o[2]||'';
+  document.getElementById('manOpt3').value = q.o[3]||'';
+  document.querySelectorAll('input[name="manCorrect"]').forEach(r=>r.checked = (+r.value===q.a));
+  document.getElementById('manExp').value = q.exp||'';
+  document.getElementById('manSrc').value = q.src||'';
+  document.getElementById('manDiff').value = q.diff||'medium';
+  editingQuestion = {tid, qi};
+  const btn = document.querySelector('#qmManualMode .btn.block');
+  btn.textContent = '✅ बदलाव सेव करें';
+  document.getElementById('panel-manage').scrollIntoView({behavior:'smooth', block:'start'});
+  showStatus('manageStatus', 'ऊपर फॉर्म में प्रश्न भर दिया गया है — बदलकर सेव करें', 'ok');
+}
+
+// ── MANUAL ADD / EDIT ──
+let editingQuestion = null; // {tid, qi} when editing an existing question, else null
+function addManualQuestion() {
+  const tid = document.getElementById('manageTopicSelect').value;
+  if(!tid) { showStatus('manageStatus', '❌ पहले टॉपिक चुनें', 'err'); return; }
+  const qText = document.getElementById('manQText').value.trim();
+  const opts = [0,1,2,3].map(i=>document.getElementById('manOpt'+i).value.trim());
+  const filledOpts = opts.filter(o=>o);
+  if(!qText) { showStatus('manageStatus', '❌ प्रश्न लिखें', 'err'); return; }
+  if(filledOpts.length<2) { showStatus('manageStatus', '❌ कम से कम 2 विकल्प भरें', 'err'); return; }
+  const correctIdx = +document.querySelector('input[name="manCorrect"]:checked').value;
+  if(!opts[correctIdx]) { showStatus('manageStatus', '❌ जिस विकल्प को सही चुना है वो खाली है', 'err'); return; }
+  // build option list preserving only filled slots, and remap correct index accordingly
+  const finalOpts = []; let finalCorrect = -1;
+  opts.forEach((o,i)=>{ if(o){ if(i===correctIdx) finalCorrect = finalOpts.length; finalOpts.push(o); } });
+  const qObj = {
+    q:qText, o:finalOpts, a:finalCorrect,
+    exp:document.getElementById('manExp').value.trim(),
+    src:document.getElementById('manSrc').value.trim(),
+    diff:document.getElementById('manDiff').value
+  };
+  if(!QDB[tid]) QDB[tid]=[];
+  if(editingQuestion && editingQuestion.tid===tid && QDB[tid][editingQuestion.qi]) {
+    QDB[tid][editingQuestion.qi] = qObj;
+    showStatus('manageStatus', '✅ प्रश्न अपडेट हो गया', 'ok');
+  } else {
+    QDB[tid].push(qObj);
+    showStatus('manageStatus', `✅ प्रश्न जुड़ गया! इस टॉपिक में कुल: ${QDB[tid].length}`, 'ok');
+  }
+  saveQDB();
+  clearManualForm();
+  renderManageOverview();
+  renderManagePanel();
+  document.getElementById('manageTopicSelect').value = tid;
+  onManageTopicChange();
+  updateHeaderStats();
+}
+function clearManualForm() {
+  editingQuestion = null;
+  document.getElementById('manQText').value = '';
+  [0,1,2,3].forEach(i=>document.getElementById('manOpt'+i).value = '');
+  document.querySelector('input[name="manCorrect"][value="0"]').checked = true;
+  document.getElementById('manExp').value = '';
+  document.getElementById('manSrc').value = '';
+  document.getElementById('manDiff').value = 'medium';
+  const btn = document.querySelector('#qmManualMode .btn.block');
+  if(btn) btn.textContent = '➕ प्रश्न जोड़ें';
+}
+
+// ── JSON VALIDATION (tolerant of common paste mistakes) ──
+function normalizeJsonInput(raw) {
+  // Accepts: a proper array, a single bare object, or multiple objects/arrays
+  // pasted back-to-back (a very common copy-paste mistake). Returns a single array.
+  let text = raw.trim();
+  // strip trailing commas before ] or } which JSON.parse otherwise rejects outright
+  const stripTrailingCommas = s => s.replace(/,(\s*[\]}])/g, '$1');
+  try {
+    const data = JSON.parse(stripTrailingCommas(text));
+    return Array.isArray(data) ? data : [data];
+  } catch(e) {
+    // try treating input as multiple concatenated JSON values: {..}{..}  or [..][..]
+    const pieces = [];
+    let depth = 0, start = -1, inStr = false, esc = false;
+    for(let i=0;i<text.length;i++) {
+      const c = text[i];
+      if(inStr) {
+        if(esc) esc=false;
+        else if(c==='\\') esc=true;
+        else if(c==='"') inStr=false;
+        continue;
+      }
+      if(c==='"') { inStr=true; continue; }
+      if(c==='{'||c==='[') { if(depth===0) start=i; depth++; }
+      else if(c==='}'||c===']') { depth--; if(depth===0 && start>-1) { pieces.push(text.slice(start,i+1)); start=-1; } }
+    }
+    if(pieces.length===0) throw e; // genuinely broken JSON, nothing we can salvage
+    let combined = [];
+    for(const p of pieces) {
+      const parsed = JSON.parse(stripTrailingCommas(p)); // let this throw with a clear index if one piece is bad
+      combined = combined.concat(Array.isArray(parsed) ? parsed : [parsed]);
+    }
+    return combined;
+  }
+}
 function validateQuestions(arr) {
   const valid = [];
-  for(const q of arr) {
-    if(q && typeof q.q==='string' && Array.isArray(q.o) && q.o.length>=2 && typeof q.a==='number' && q.a>=0 && q.a<q.o.length) {
-      valid.push({q:q.q, o:q.o, a:q.a, exp:q.exp||'', src:q.src||'', diff:q.diff||'medium'});
-    }
+  const rejected = []; // {index, reason}
+  arr.forEach((q,i) => {
+    if(!q || typeof q!=='object') { rejected.push({index:i, reason:'यह एक valid JSON object नहीं है'}); return; }
+    if(typeof q.q!=='string' || !q.q.trim()) { rejected.push({index:i, reason:'"q" (प्रश्न टेक्स्ट) missing है'}); return; }
+    if(!Array.isArray(q.o) || q.o.length<2) { rejected.push({index:i, reason:'"o" (विकल्प) कम से कम 2 होने चाहिए'}); return; }
+    if(typeof q.a!=='number' || q.a<0 || q.a>=q.o.length) { rejected.push({index:i, reason:`"a" (सही उत्तर index) 0 से ${q.o.length-1} के बीच होना चाहिए`}); return; }
+    valid.push({q:q.q, o:q.o, a:q.a, exp:q.exp||'', src:q.src||'', diff:q.diff||'medium'});
+  });
+  return {valid, rejected};
+}
+function describeRejections(rejected) {
+  if(rejected.length===0) return '';
+  const shown = rejected.slice(0,5).map(r=>`#${r.index+1}: ${r.reason}`).join('; ');
+  const more = rejected.length>5 ? ` (+${rejected.length-5} और)` : '';
+  return ` छोड़े गए ${rejected.length}: ${shown}${more}`;
+}
+function ingestQuestions(tid, rawText) {
+  // shared by paste + file upload. Returns {ok, message, type}
+  if(!rawText.trim()) return {ok:false, message:'❌ कृपया JSON पेस्ट करें', type:'err'};
+  let arr;
+  try {
+    arr = normalizeJsonInput(rawText);
+  } catch(e) {
+    return {ok:false, message:'❌ Invalid JSON: ' + e.message + '। ध्यान दें कि पूरी list [ ] के अंदर, कॉमा से अलग होनी चाहिए।', type:'err'};
   }
-  return valid;
+  if(!Array.isArray(arr) || arr.length===0) {
+    return {ok:false, message:'❌ कोई प्रश्न नहीं मिला। कम से कम एक JSON object/array दें।', type:'err'};
+  }
+  const {valid, rejected} = validateQuestions(arr);
+  if(valid.length===0) {
+    return {ok:false, message:`❌ ${arr.length} entries मिलीं पर कोई मान्य नहीं थी।${describeRejections(rejected)}`, type:'err'};
+  }
+  if(!QDB[tid]) QDB[tid]=[];
+  QDB[tid].push(...valid);
+  saveQDB();
+  let msg = `✅ ${valid.length}/${arr.length} प्रश्न सेव हुए! कुल: ${QDB[tid].length}`;
+  if(rejected.length>0) msg += `.${describeRejections(rejected)}`;
+  return {ok:true, message:msg, type: rejected.length>0 ? 'ok' : 'ok'};
 }
 function pasteJsonSubmit() {
   const tid = document.getElementById('manageTopicSelect').value;
   if(!tid) return;
-  const raw = document.getElementById('jsonPasteArea').value.trim();
-  if(!raw) { showStatus('manageStatus', '❌ कृपया JSON पेस्ट करें', 'err'); return; }
-  try {
-    const data = JSON.parse(raw);
-    if(!Array.isArray(data)) throw new Error('Array होना चाहिए');
-    const valid = validateQuestions(data);
-    if(valid.length===0) { showStatus('manageStatus', '❌ कोई मान्य प्रश्न नहीं मिला। Format जांचें।', 'err'); return; }
-    if(!QDB[tid]) QDB[tid]=[];
-    QDB[tid].push(...valid);
-    saveQDB();
+  const raw = document.getElementById('jsonPasteArea').value;
+  const res = ingestQuestions(tid, raw);
+  showStatus('manageStatus', res.message, res.type);
+  if(res.ok) {
     document.getElementById('jsonPasteArea').value = '';
-    showStatus('manageStatus', `✅ ${valid.length} प्रश्न सेव हुए! कुल: ${QDB[tid].length}`, 'ok');
     renderManageOverview();
     renderManagePanel();
     document.getElementById('manageTopicSelect').value = tid;
     onManageTopicChange();
-  } catch(e) {
-    showStatus('manageStatus', '❌ Invalid JSON: ' + e.message, 'err');
+    updateHeaderStats();
   }
 }
 function handleJsonFile(evt) {
@@ -1445,21 +1730,14 @@ function handleJsonFile(evt) {
   if(!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if(!Array.isArray(data)) throw new Error('Array होना चाहिए');
-      const valid = validateQuestions(data);
-      if(valid.length===0) { showStatus('manageStatus', '❌ कोई मान्य प्रश्न नहीं मिला।', 'err'); return; }
-      if(!QDB[tid]) QDB[tid]=[];
-      QDB[tid].push(...valid);
-      saveQDB();
-      showStatus('manageStatus', `✅ ${valid.length} प्रश्न फाइल से सेव हुए! कुल: ${QDB[tid].length}`, 'ok');
+    const res = ingestQuestions(tid, e.target.result);
+    showStatus('manageStatus', res.message.replace('सेव हुए', 'फाइल से सेव हुए'), res.type);
+    if(res.ok) {
       renderManageOverview();
       renderManagePanel();
       document.getElementById('manageTopicSelect').value = tid;
       onManageTopicChange();
-    } catch(err) {
-      showStatus('manageStatus', '❌ Invalid JSON फाइल: ' + err.message, 'err');
+      updateHeaderStats();
     }
   };
   reader.readAsText(file);
